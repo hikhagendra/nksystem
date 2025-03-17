@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NKSystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex">
+
+    <!-- Sidebar Menu -->
+    <div class="w-64 bg-gray-800 text-white min-h-screen p-4" id="sidebar">
+        <h2 class="text-xl font-bold mb-4">NKSystem</h2>
+        <ul>
+            <li class="mb-2"><a href="dashboard.html" class="block p-2 hover:bg-gray-700">Dashboard</a></li>
+            <li class="mb-2"><a href="manage-team.html" class="block p-2 hover:bg-gray-700">Manage Team Members</a></li>
+            <li class="mb-2"><a href="pegasus.html" class="block p-2 hover:bg-gray-700">Manage Pegasus Accounts</a></li>
+            <li class="mb-2"><a href="reports.html" class="block p-2 hover:bg-gray-700">Generate Reports</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+        <div class="flex justify-between mb-4">
+            <h1 class="text-2xl font-bold">Dashboard</h1>
+            <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+        </div>
+
+        <button onclick="fetchPegasusData()" class="bg-green-500 text-white px-4 py-2 mb-4 rounded">Fetch Data from Pegasus</button>
+        
+        <div>
+            <h2 class="text-lg font-bold mb-2">Tasks</h2>
+            <table class="w-full bg-white shadow-md rounded">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="p-2">Project Name</th>
+                        <th class="p-2">Task Name</th>
+                        <th class="p-2">Assigned Member</th>
+                        <th class="p-2">Estimation</th>
+                        <th class="p-2">Notes</th>
+                        <th class="p-2">Link</th>
+                    </tr>
+                </thead>
+                <tbody id="task-list">
+                    <!-- Tasks will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in and has user role
+        window.onload = function() {
+            if (!localStorage.getItem("loggedIn")) {
+                window.location.href = "index.html"; // Redirect to login if not logged in
+            } else if (localStorage.getItem("userRole") !== "user") {
+                window.location.href = "dashboard-admin.html"; // Redirect to admin dashboard if not user
+            }
+        };
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem("loggedIn");
+            window.location.href = "index.html"; // Redirect to login page after logout
+        }
+
+        // Fetch tasks from Pegasus (placeholder for actual logic)
+        function fetchPegasusData() {
+            alert("Fetching data from Pegasus...");
+
+            // Example of data fetching (replace with your actual scraping logic)
+            const exampleData = [
+                { projectName: "Project 1", taskName: "Task A", assignedMember: "Member 1", estimation: "5 hours", notes: "Urgent", link: "#" },
+                { projectName: "Project 2", taskName: "Task B", assignedMember: "Member 2", estimation: "3 hours", notes: "Normal", link: "#" },
+            ];
+
+            const taskList = document.getElementById("task-list");
+            taskList.innerHTML = ''; // Clear previous data
+
+            exampleData.forEach(task => {
+                const row = document.createElement("tr");
+                row.classList.add("text-center");
+
+                row.innerHTML = `
+                    <td class="p-2">${task.projectName}</td>
+                    <td class="p-2">${task.taskName}</td>
+                    <td class="p-2">${task.assignedMember}</td>
+                    <td class="p-2">${task.estimation}</td>
+                    <td class="p-2">${task.notes}</td>
+                    <td class="p-2"><a href="${task.link}" class="text-blue-500">View</a></td>
+                `;
+                taskList.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>

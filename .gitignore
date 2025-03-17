@@ -1,0 +1,7 @@
+/backend/node_modules
+/backend/dist
+/backend/logs
+/backend/logs/*
+/backend/logs/*.log
+/backend/logs/*.log.*
+/backend/logs/*.log.*.*
