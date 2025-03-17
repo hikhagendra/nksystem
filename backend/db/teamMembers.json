@@ -1,5 +1,79 @@
 [
-    { "id": 1, "name": "Khagen", "username": "khagen", "password": "1234", "role": "admin" },
-    { "id": 2, "name": "Niraj", "username": "niraj", "password": "5678", "role": "user" }
+    {
+        "id": 1,
+        "pegasusName": "Khagen",
+        "username": "khagen",
+        "password": "1234",
+        "role": "admin"
+    },
+    {
+        "id": 2,
+        "pegasusName": "Nhujan Maharjan",
+        "username": "nhujan",
+        "password": "1234",
+        "role": "admin"
+    },
+    {
+        "id": 3,
+        "pegasusName": "Ujjwel",
+        "username": "ujjwel",
+        "password": "1234",
+        "role": "user"
+    },
+    {
+        "id": 4,
+        "pegasusName": "Mukesh Shrestha",
+        "username": "mukesh",
+        "password": "1234",
+        "role": "user"
+    },
+    {
+        "id": 5,
+        "pegasusName": "Aman",
+        "username": "aman",
+        "password": "1234",
+        "role": "user"
+    },
+    {
+        "id": 6,
+        "pegasusName": "Khageshwari Nath",
+        "username": "khageshwari",
+        "password": "1234",
+        "role": "user"
+    },
+    {
+        "id": 7,
+        "pegasusName": "Manshi Shivam Jha",
+        "username": "manshi",
+        "password": "1234",
+        "role": "user"
+    },
+    {
+        "id": 8,
+        "pegasusName": "Abhinab Subedi",
+        "username": "abhinab",
+        "password": "1234",
+        "role": "user"
+    },
+    {
+        "id": 9,
+        "pegasusName": "Batsal Manandhar",
+        "username": "batsal",
+        "password": "1234",
+        "role": "user"
+    },
+    {
+        "id": 10,
+        "pegasusName": "Saroj Bhatta",
+        "username": "saroj",
+        "password": "1234",
+        "role": "user"
+    },
+    {
+        "id": 11,
+        "pegasusName": "Bidhan Rai",
+        "username": "bidhan",
+        "password": "1234",
+        "role": "user"
+    }
 ]
-  

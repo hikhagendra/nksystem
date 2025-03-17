@@ -21,27 +21,24 @@ window.onload = function() {
     }
 
     // Role-based routing
-    if (currentPath.includes('manage-team.html') || currentPath.includes('pegasus.html')) {
+    if (currentPath.includes('manage-team.html')) {
         if (userRole !== 'admin') {
             window.location.href = "dashboard-user.html";
             return;
         }
-        if (currentPath.includes('manage-team.html')) {
-            loadTeamMembers();
-        } else if (currentPath.includes('pegasus.html')) {
-            loadPegasusAccounts();
-        }
-    } else if (currentPath.includes('dashboard-admin.html')) {
-        if (userRole !== 'admin') {
+        loadTeamMembers();
+    } else if (currentPath.includes('dashboard-admin.html') || currentPath.includes('dashboard-user.html')) {
+        // Check role and redirect if necessary
+        if (currentPath.includes('dashboard-admin.html') && userRole !== 'admin') {
             window.location.href = "dashboard-user.html";
-        } else {
-            // Load tasks automatically for admin dashboard
-            syncTasks();
-        }
-    } else if (currentPath.includes('dashboard-user.html')) {
-        if (userRole !== 'user') {
+            return;
+        } else if (currentPath.includes('dashboard-user.html') && userRole !== 'user') {
             window.location.href = "dashboard-admin.html";
+            return;
         }
+        
+        // Load tasks for both admin and user dashboards
+        loadAndDisplayTasks();
     }
 };
 
@@ -85,42 +82,48 @@ document.getElementById("login-form")?.addEventListener("submit", function(event
 });
 
 // Handle Add Member form submission
-document.getElementById("add-member-form")?.addEventListener("submit", function(event) {
+document.getElementById("add-member-form")?.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    const username = document.getElementById("new-member-username").value;
+    const pegasusName = document.getElementById("new-member-pegasus-name").value.trim();
+    const username = document.getElementById("new-member-username").value.trim();
     const password = document.getElementById("new-member-password").value;
+    const role = document.getElementById("new-member-role").value;
 
     // Validate inputs
-    if (username && password) {
-        addMember(username, password); // Add new member to team
-        document.getElementById("add-member-form").reset(); // Reset the form
+    if (!pegasusName || !username || !password || !role) {
+        alert('All fields are required');
+        return;
+    }
+
+    try {
+        const response = await fetch('/add-member', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                pegasusName, 
+                username, 
+                password,
+                role 
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById("add-member-form").reset();
+            loadTeamMembers();
+            alert('Member added successfully');
+        } else {
+            alert(data.message || 'Error adding member');
+        }
+    } catch (error) {
+        console.error('Error adding member:', error);
+        alert('Error adding member. Please try again.');
     }
 });
-
-// Add new member (Send data to backend)
-function addMember(username, password) {
-    // Send member data to the backend
-    fetch('/add-member', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadTeamMembers(); // Reload the team members list from the server
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error adding member:', error);
-        alert("Error adding member. Please try again.");
-    });
-}
 
 // Load all team members from the backend and display them
 function loadTeamMembers() {
@@ -129,16 +132,30 @@ function loadTeamMembers() {
     .then(data => {
         if (data.success) {
             const teamList = document.getElementById("team-members-list");
-            teamList.innerHTML = ''; // Clear existing list
+            teamList.innerHTML = '';
 
-            data.teamMembers.forEach((member, index) => {
+            data.teamMembers.forEach((member) => {
                 const row = document.createElement("tr");
+                row.classList.add("hover:bg-gray-50");
                 row.innerHTML = `
-                    <td class="p-2">${member.name}</td>
-                    <td class="p-2">${member.username}</td>
-                    <td class="p-2">${member.role}</td>
-                    <td class="p-2">
-                        <button onclick="deleteMember(${member.id})" class="bg-red-500 text-white px-4 py-1 rounded">Delete</button>
+                    <td class="p-2 border-t">${member.pegasusName}</td>
+                    <td class="p-2 border-t">${member.username}</td>
+                    <td class="p-2 border-t">
+                        <span class="px-2 py-1 text-sm rounded-full ${
+                            member.role === 'admin' 
+                            ? 'bg-purple-100 text-purple-800' 
+                            : 'bg-blue-100 text-blue-800'
+                        }">
+                            ${member.role}
+                        </span>
+                    </td>
+                    <td class="p-2 border-t">
+                        ${member.role !== 'admin' ? `
+                            <button onclick="deleteMember(${member.id})" 
+                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                Delete
+                            </button>
+                        ` : ''}
                     </td>
                 `;
                 teamList.appendChild(row);
@@ -185,87 +202,6 @@ function logout() {
     window.location.href = "index.html"; // Redirect to login page after logout
 }
 
-// Handle Add Pegasus Account form submission
-document.getElementById("add-pegasus-form")?.addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const username = document.getElementById("pegasus-username").value;
-    const password = document.getElementById("pegasus-password").value;
-
-    // Validate inputs
-    if (username && password) {
-        addPegasusAccount(username, password); // Add new account to Pegasus accounts
-        document.getElementById("add-pegasus-form").reset(); // Reset the form
-    }
-});
-
-// Add a new Pegasus account (Send data to backend)
-function addPegasusAccount(username, password) {
-    fetch('/add-pegasus-account', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadPegasusAccounts(); // Reload the list of accounts
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error adding Pegasus account:', error);
-        alert("Error adding Pegasus account. Please try again.");
-    });
-}
-
-// Load all Pegasus accounts from the backend and display them
-function loadPegasusAccounts() {
-    fetch('/pegasus-accounts')
-    .then(response => response.json())
-    .then(data => {
-        const accountsList = document.getElementById("pegasus-accounts-list");
-        accountsList.innerHTML = ''; // Clear existing list
-
-        data.accounts.forEach((account, index) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td class="p-2">${account.username}</td>
-                <td class="p-2">
-                    <button onclick="deletePegasusAccount(${index})" class="bg-red-500 text-white px-4 py-1 rounded">Delete</button>
-                </td>
-            `;
-            accountsList.appendChild(row);
-        });
-    })
-    .catch(error => {
-        console.error('Error loading Pegasus accounts:', error);
-        alert("Error loading Pegasus accounts.");
-    });
-}
-
-// Delete a Pegasus account (Send delete request to backend)
-function deletePegasusAccount(index) {
-    fetch(`/delete-pegasus-account/${index}`, {
-        method: 'DELETE'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadPegasusAccounts(); // Reload the list of accounts
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error deleting Pegasus account:', error);
-        alert("Error deleting Pegasus account.");
-    });
-}
-
 // Update tasks data
 async function updateTasksData() {
     document.getElementById('jsonModal').classList.remove('hidden');
@@ -289,9 +225,7 @@ async function submitJsonData() {
         let tasks;
         try {
             tasks = JSON.parse(jsonInput);
-            // Accept either the full response object or just the data array
             if (Array.isArray(tasks)) {
-                // If it's an array, wrap it in the expected format
                 tasks = {
                     data: tasks,
                     disableOrdering: false
@@ -320,31 +254,22 @@ async function submitJsonData() {
 
         if (data.success) {
             closeJsonModal();
-            alert('Tasks updated successfully');
-            syncTasks(); // Refresh the display
+            // Get the updated tasks immediately
+            const tasksResponse = await fetch('/tasks');
+            const tasksData = await tasksResponse.json();
+            
+            if (tasksData.success) {
+                displayTasks(tasksData.tasks);
+                alert('Tasks updated successfully. Existing estimations and notes have been preserved.');
+            } else {
+                throw new Error(tasksData.message || 'Error loading updated tasks');
+            }
         } else {
             alert(data.message || 'Error updating tasks');
         }
     } catch (error) {
         console.error('Error updating tasks:', error);
         alert('Error updating tasks: ' + error.message);
-    }
-}
-
-// Sync and display tasks
-async function syncTasks() {
-    try {
-        const response = await fetch('/tasks');
-        const data = await response.json();
-
-        if (data.success) {
-            displayTasks(data.tasks);
-        } else {
-            alert(data.message || 'Error syncing tasks');
-        }
-    } catch (error) {
-        console.error('Error syncing tasks:', error);
-        alert('Error syncing tasks');
     }
 }
 
@@ -355,12 +280,35 @@ function decodeHtmlEntities(text) {
     return textarea.value;
 }
 
-// Display tasks in the table
+// Function to get team members options
+async function getTeamMembersOptions(selectedUser) {
+    let optionsHtml = '<option value="">Unassigned</option>';
+    
+    try {
+        const response = await fetch('/team-members');
+        const data = await response.json();
+        
+        if (data.success && data.teamMembers) {
+            const memberOptions = data.teamMembers.map(member => 
+                `<option value="${member.pegasusName}" ${member.pegasusName === selectedUser ? 'selected' : ''}>
+                    ${member.pegasusName}
+                </option>`
+            ).join('');
+            optionsHtml += memberOptions;
+        }
+    } catch (error) {
+        console.error('Error loading team members:', error);
+    }
+    
+    return optionsHtml;
+}
+
+// Display tasks function
 function displayTasks(tasks) {
     const taskList = document.getElementById("task-list");
     if (!taskList) return;
 
-    taskList.innerHTML = ''; // Clear previous data
+    taskList.innerHTML = '';
 
     if (!Array.isArray(tasks) || tasks.length === 0) {
         const row = document.createElement("tr");
@@ -371,52 +319,257 @@ function displayTasks(tasks) {
         return;
     }
 
-    tasks.forEach((task, index) => {
-        const row = document.createElement("tr");
-        row.classList.add("hover:bg-gray-50");
+    // First, get team members for the dropdown
+    fetch('/team-members')
+        .then(response => response.json())
+        .then(teamData => {
+            const teamMembers = teamData.success ? teamData.teamMembers : [];
+            
+            tasks.forEach((task, index) => {
+                const row = document.createElement("tr");
+                row.classList.add("hover:bg-gray-50");
+                row.dataset.taskId = task.id;
 
-        row.innerHTML = `
-            <td class="p-2 border text-center">${index + 1}</td>
-            <td class="p-2 border">${decodeHtmlEntities(task.projectName)}</td>
-            <td class="p-2 border">${decodeHtmlEntities(task.taskName)}</td>
-            <td class="p-2 border">${task.assignedTo}</td>
-            <td class="p-2 border">
-                <span class="px-2 py-1 text-sm rounded-full ${getStatusClass(task.status)}">
-                    ${task.status}
-                </span>
-            </td>
-            <td class="p-2 border">${task.estimation}</td>
-            <td class="p-2 border">${task.notes}</td>
-            <td class="p-2 border text-center">
-                <a href="${task.link}" 
-                   class="inline-block text-blue-500 hover:text-blue-700" 
-                   target="_blank" 
-                   title="Open task">
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                         class="h-5 w-5" 
-                         fill="none" 
-                         viewBox="0 0 24 24" 
-                         stroke="currentColor">
-                        <path stroke-linecap="round" 
-                              stroke-linejoin="round" 
-                              stroke-width="2" 
-                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </a>
-            </td>
-        `;
-        taskList.appendChild(row);
+                const assignedTo = task.user?.pegasusName || '';
+                const memberOptions = teamMembers.map(member => 
+                    `<option value="${member.pegasusName}" ${member.pegasusName === assignedTo ? 'selected' : ''}>
+                        ${member.pegasusName}
+                    </option>`
+                ).join('');
+
+                row.innerHTML = `
+                    <td class="p-2 border text-center w-12">${index + 1}</td>
+                    <td class="p-2 border w-96">${decodeHtmlEntities(task.projectName)}</td>
+                    <td class="p-2 border w-48">${decodeHtmlEntities(task.taskName)}</td>
+                    <td class="p-2 border w-40">
+                        <select class="w-full bg-transparent assignee-select" onchange="updateTaskField(this, 'assignedTo')">
+                            <option value="">Unassigned</option>
+                            ${memberOptions}
+                        </select>
+                    </td>
+                    <td class="p-2 border w-32">
+                        <select class="w-full bg-transparent label-select" onchange="updateTaskField(this, 'status')">
+                            <option value="No Label" ${task.status === 'No Label' ? 'selected' : ''}>No Label</option>
+                            <option value="Confirmed" ${task.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                        </select>
+                    </td>
+                    <td class="p-2 border w-24 estimation-cell" ondblclick="makeEditable(this, 'estimation')">
+                        ${task.estimation || '-'}
+                    </td>
+                    <td class="p-2 border w-[21.6rem] notes-cell" ondblclick="makeEditable(this, 'notes')">
+                        ${task.notes || '-'}
+                    </td>
+                    <td class="p-2 border text-center w-12">
+                        <a href="${task.link}" 
+                           class="inline-block text-blue-500 hover:text-blue-700" 
+                           target="_blank" 
+                           title="Open task">
+                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                 class="h-5 w-5" 
+                                 fill="none" 
+                                 viewBox="0 0 24 24" 
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" 
+                                      stroke-linejoin="round" 
+                                      stroke-width="2" 
+                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </td>
+                `;
+                taskList.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading team members:', error);
+        });
+
+    // Add this style tag to your HTML file
+    const style = document.createElement('style');
+    style.textContent = `
+        .estimation-cell, .notes-cell {
+            position: relative;
+        }
+        .estimation-cell input, .notes-cell input {
+            background: white;
+        }
+        tr:last-child .estimation-cell .absolute,
+        tr:last-child .notes-cell .absolute {
+            bottom: auto;
+            top: -8px;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Function to make cells editable
+function makeEditable(cell, field) {
+    // Close any other open editors first
+    closeAllEditors(cell);
+    
+    const currentValue = cell.textContent.trim();
+    const isEstimation = field === 'estimation';
+    const width = cell.offsetWidth;
+    
+    cell.innerHTML = `
+        <div class="relative" style="width: ${width}px">
+            <input type="${isEstimation ? 'number' : 'text'}" 
+                   class="w-full p-1 border rounded text-sm"
+                   value="${currentValue === '-' ? '' : currentValue}"
+                   placeholder="${isEstimation ? 'Hours' : 'Add notes'}"
+                   step="${isEstimation ? '0.5' : ''}"
+                   min="${isEstimation ? '0' : ''}"
+                   onkeydown="handleEditKeydown(event, this, '${field}')" />
+            <div class="absolute -bottom-8 right-0 flex gap-1 bg-white shadow-md rounded border p-1 z-10">
+                <button onclick="saveEdit(this.parentElement.previousElementSibling, '${field}')" 
+                        class="px-2 py-0.5 text-xs text-white bg-green-500 rounded hover:bg-green-600" 
+                        title="Save">
+                    Save
+                </button>
+                <button onclick="cancelEdit(this.closest('td'), '${currentValue}')" 
+                        class="px-2 py-0.5 text-xs text-white bg-gray-500 rounded hover:bg-gray-600" 
+                        title="Cancel">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    `;
+    
+    const input = cell.querySelector('input');
+    input.focus();
+    
+    // Add click event listener to document to close editor when clicking outside
+    setTimeout(() => {
+        document.addEventListener('click', function closeEditor(e) {
+            if (!cell.contains(e.target)) {
+                cancelEdit(cell, currentValue);
+                document.removeEventListener('click', closeEditor);
+            }
+        });
+    }, 0);
+}
+
+// Function to close all open editors except the current one
+function closeAllEditors(currentCell) {
+    const editors = document.querySelectorAll('.estimation-cell, .notes-cell');
+    editors.forEach(cell => {
+        if (cell !== currentCell && cell.querySelector('input')) {
+            const originalValue = cell.querySelector('input').defaultValue;
+            cancelEdit(cell, originalValue);
+        }
     });
 }
 
-// Helper function to get status label styling
-function getStatusClass(status) {
-    const statusMap = {
-        'In Progress': 'bg-blue-100 text-blue-800',
-        'Completed': 'bg-green-100 text-green-800',
-        'Pending': 'bg-yellow-100 text-yellow-800',
-        'Blocked': 'bg-red-100 text-red-800',
-        'Review': 'bg-purple-100 text-purple-800'
-    };
-    return statusMap[status] || 'bg-gray-100 text-gray-800';
+// Function to save edit
+function saveEdit(input, field) {
+    if (field === 'estimation' && !isValidEstimation(input.value)) {
+        alert('Please enter a valid number');
+        return;
+    }
+    updateTaskField(input, field);
+}
+
+// Function to cancel edit
+function cancelEdit(cell, originalValue) {
+    if (!cell.contains(document.activeElement)) return; // Prevent duplicate cancellations
+    cell.textContent = originalValue === '' ? '-' : originalValue;
+}
+
+// Handle keydown events for editable cells
+function handleEditKeydown(event, input, field) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        saveEdit(input, field);
+    } else if (event.key === 'Escape') {
+        event.preventDefault();
+        cancelEdit(input.closest('td'), input.defaultValue);
+    }
+}
+
+// Update task field function
+async function updateTaskField(element, field) {
+    const row = element.closest('tr');
+    const taskId = row.dataset.taskId;
+    let newValue = element.value || element.textContent;
+    const cell = element.closest('td');
+    
+    cell.classList.add('opacity-50');
+
+    try {
+        const response = await fetch('/tasks');
+        const data = await response.json();
+        if (!data.success) throw new Error('Failed to load tasks');
+
+        const tasks = data.tasks;
+        const taskIndex = tasks.findIndex(t => t.id === taskId);
+        if (taskIndex === -1) throw new Error('Task not found');
+
+        // Update the task with the new value
+        if (field === 'assignedTo') {
+            tasks[taskIndex].user = newValue ? { pegasusName: newValue } : null;
+        } else {
+            tasks[taskIndex][field] = newValue;
+        }
+
+        const updateResponse = await fetch('/update-tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data: tasks })
+        });
+
+        const updateData = await updateResponse.json();
+        if (!updateData.success) throw new Error('Failed to update task');
+
+        cell.classList.remove('opacity-50');
+        if (element.tagName === 'INPUT') {
+            cell.textContent = newValue || '-';
+        }
+    } catch (error) {
+        console.error('Error updating task:', error);
+        alert('Failed to update task. Please try again.');
+        cell.classList.remove('opacity-50');
+        if (element.tagName === 'INPUT') {
+            cancelEdit(cell, element.defaultValue);
+        }
+    }
+}
+
+// Function to load and display tasks
+async function loadAndDisplayTasks() {
+    try {
+        const response = await fetch('/tasks');
+        const data = await response.json();
+        
+        if (data.success) {
+            displayTasks(data.tasks);
+        } else {
+            console.error('Error loading tasks:', data.message);
+            // Show a more user-friendly message in the table
+            const taskList = document.getElementById("task-list");
+            if (taskList) {
+                taskList.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="p-2 text-center text-gray-500 border">
+                            No tasks available. ${data.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading tasks:', error);
+        // Show error message in the table
+        const taskList = document.getElementById("task-list");
+        if (taskList) {
+            taskList.innerHTML = `
+                <tr>
+                    <td colspan="8" class="p-2 text-center text-red-500 border">
+                        Error loading tasks. Please try again later.
+                    </td>
+                </tr>
+            `;
+        }
+    }
 }
