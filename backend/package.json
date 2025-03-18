@@ -16,8 +16,10 @@
     "cheerio": "^1.0.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
+    "csv-parser": "^3.2.0",
     "express": "^4.21.2",
     "fs": "0.0.1-security",
+    "multer": "^1.4.5-lts.1",
     "tough-cookie": "^5.1.2"
   }
 }

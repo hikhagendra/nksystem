@@ -2,10 +2,14 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const csv = require('csv-parser');
+const he = require('he'); // Use 'he' library for HTML entity decoding
 
 const app = express();
 const port = 3000;
 const host = '0.0.0.0';  // Listen on all network interfaces
+const upload = multer({ dest: 'uploads/' });
 
 // Middleware
 app.use(bodyParser.json({limit: '50mb'}));
@@ -346,6 +350,91 @@ function saveNotesHistory(taskId, notes, taskData) {
 
     // Save updated history
     fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+}
+
+// Endpoint to handle CSV file upload
+app.post('/upload-csv', upload.single('csvFile'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const filePath = path.join(__dirname, req.file.path);
+    const results = [];
+
+    fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', () => {
+            try {
+                // Process CSV data and store in JSON
+                storeTrackedData(results);
+                fs.unlinkSync(filePath); // Remove the uploaded file
+                res.json({ success: true, message: 'CSV data processed and stored successfully' });
+            } catch (error) {
+                console.error('Error processing CSV data:', error);
+                res.status(500).json({ success: false, message: 'Error processing CSV data' });
+            }
+        })
+        .on('error', (error) => {
+            console.error('Error reading CSV file:', error);
+            res.status(500).json({ success: false, message: 'Error reading CSV file' });
+        });
+});
+
+// Function to store tracked data in JSON
+function storeTrackedData(csvData) {
+    const tasksFilePath = path.join(__dirname, 'db', 'pegasusTask.json');
+    const trackedDataFilePath = path.join(__dirname, 'db', 'trackedData.json');
+
+    // Read existing tasks
+    const tasks = JSON.parse(fs.readFileSync(tasksFilePath, 'utf8')).data;
+
+    // Prepare tracked data structure
+    const trackedData = csvData.map(row => {
+        const csvTaskName = row['Task Name'].split(': ')[1]; // Extract task name after the colon
+        const decodedCsvTaskName = he.decode(csvTaskName); // Decode HTML entities
+
+        const trackedTime = parseFloat(row['Total Time (Decimal)']) || 0;
+
+        // Find the corresponding task by name
+        const task = tasks.find(t => he.decode(t.taskName) === decodedCsvTaskName);
+
+        return {
+            taskId: task ? task.id : null,
+            taskName: csvTaskName,
+            trackedTime,
+            date: row['Date'],
+            project: row['Project'],
+            person: row['Person']
+        };
+    });
+
+    // Write tracked data to JSON file
+    fs.writeFileSync(trackedDataFilePath, JSON.stringify(trackedData, null, 2));
+}
+
+function generateDailyReport() {
+    const tasksFilePath = path.join(__dirname, 'db', 'tasks.json');
+    const reportFilePath = path.join(__dirname, 'db', 'dailyReports.json');
+    const tasks = JSON.parse(fs.readFileSync(tasksFilePath, 'utf8'));
+
+    const report = {
+        date: new Date().toISOString().split('T')[0],
+        tasks: tasks.map(task => ({
+            name: task.name,
+            estimation: task.estimation,
+            trackedTime: task.trackedTime,
+            remainingTime: (task.estimation || 0) - (task.trackedTime || 0)
+        }))
+    };
+
+    let reports = [];
+    if (fs.existsSync(reportFilePath)) {
+        reports = JSON.parse(fs.readFileSync(reportFilePath, 'utf8'));
+    }
+    reports.push(report);
+
+    fs.writeFileSync(reportFilePath, JSON.stringify(reports, null, 2));
 }
 
 // Start the server
