@@ -13,6 +13,7 @@
         <h2 class="text-xl font-bold mb-4">NKSystem</h2>
         <ul>
             <li class="mb-2"><a href="dashboard-user.html" class="block p-2 hover:bg-gray-700">Dashboard</a></li>
+            <li class="mb-2"><a href="time-tracking.html" class="block p-2 hover:bg-gray-700">Time Tracking</a></li>
         </ul>
     </div>
 
@@ -29,7 +30,8 @@
 
         <!-- Buttons -->
         <div class="flex gap-4 mb-4">
-            <button class="bg-blue-500 text-white px-4 py-2 rounded">Upload TD Report</button>
+            <input type="file" id="csvFile" accept=".csv" class="hidden" onchange="uploadCSV()">
+            <button onclick="document.getElementById('csvFile').click()" class="bg-blue-500 text-white px-4 py-2 rounded">Upload TD Report</button>
         </div>
 
         <!-- Estimation Summary Card -->
@@ -40,6 +42,17 @@
                     <p class="text-sm text-gray-500">All assigned tasks</p>
                 </div>
                 <div class="text-2xl font-bold text-blue-600" id="total-estimation">0</div>
+            </div>
+        </div>
+        
+        <!-- Tracked Time Summary Card -->
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700">Total Tracked Hours</h3>
+                    <p class="text-sm text-gray-500">All assigned tasks</p>
+                </div>
+                <div class="text-2xl font-bold text-green-600" id="total-tracked">0</div>
             </div>
         </div>
         

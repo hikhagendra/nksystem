@@ -679,7 +679,32 @@ async function loadAndDisplayTasks() {
     }
 }
 
-// Function to load team status
+// Function to determine load status with new thresholds
+function getLoadStatus(hours) {
+    if (hours > 15) {
+        return {
+            text: 'Overloaded',
+            class: 'bg-red-100 text-red-800'
+        };
+    } else if (hours > 8) {
+        return {
+            text: 'High Load',
+            class: 'bg-yellow-100 text-yellow-800'
+        };
+    } else if (hours >= 7) {
+        return {
+            text: 'Normal Load',
+            class: 'bg-green-100 text-green-800'
+        };
+    } else {
+        return {
+            text: 'Light Load',
+            class: 'bg-blue-100 text-blue-800'
+        };
+    }
+}
+
+// Modify the loadTeamStatus function to include admin's status
 async function loadTeamStatus() {
     try {
         // Fetch both tasks and team members
@@ -697,6 +722,9 @@ async function loadTeamStatus() {
 
         const tasks = tasksData.tasks;
         const teamMembers = teamData.teamMembers;
+        
+        // Get logged in admin's pegasus name
+        const loggedInAdmin = localStorage.getItem("pegasusName");
 
         // Calculate statistics
         const stats = calculateTeamStats(tasks, teamMembers);
@@ -713,31 +741,49 @@ async function loadTeamStatus() {
         const statusTable = document.getElementById('team-status-table');
         statusTable.innerHTML = '';
 
-        stats.memberStats.forEach(member => {
-            const row = document.createElement('tr');
-            row.classList.add('border-t', 'hover:bg-gray-50');
-            
-            const loadStatus = getLoadStatus(member.totalHours);
-            
-            row.innerHTML = `
-                <td class="p-3">
-                    <div class="font-medium">${member.pegasusName}</div>
-                </td>
-                <td class="p-3">${member.taskCount}</td>
-                <td class="p-3">${member.totalHours.toFixed(2)}</td>
-                <td class="p-3">
-                    <span class="px-2 py-1 rounded-full text-sm ${loadStatus.class}">
-                        ${loadStatus.text}
-                    </span>
-                </td>
-            `;
-            statusTable.appendChild(row);
-        });
+        // First add the logged in admin's stats if they have any tasks
+        const adminStats = stats.memberStats.find(member => member.pegasusName === loggedInAdmin);
+        if (adminStats) {
+            const adminRow = createStatusRow(adminStats, true);
+            statusTable.appendChild(adminRow);
+        }
+
+        // Then add all other members
+        stats.memberStats
+            .filter(member => member.pegasusName !== loggedInAdmin)
+            .forEach(member => {
+                const row = createStatusRow(member, false);
+                statusTable.appendChild(row);
+            });
 
     } catch (error) {
         console.error('Error loading team status:', error);
         alert('Error loading team status');
     }
+}
+
+// Helper function to create status row
+function createStatusRow(member, isAdmin) {
+    const row = document.createElement('tr');
+    row.classList.add('border-t', 'hover:bg-gray-50');
+    
+    const loadStatus = getLoadStatus(member.totalHours);
+    
+    row.innerHTML = `
+        <td class="p-3">
+            <div class="font-medium ${isAdmin ? 'text-blue-600' : ''}">
+                ${member.pegasusName} ${isAdmin ? '(You)' : ''}
+            </div>
+        </td>
+        <td class="p-3">${member.taskCount}</td>
+        <td class="p-3">${member.totalHours.toFixed(2)}</td>
+        <td class="p-3">
+            <span class="px-2 py-1 rounded-full text-sm ${loadStatus.class}">
+                ${loadStatus.text}
+            </span>
+        </td>
+    `;
+    return row;
 }
 
 // Function to calculate team statistics
@@ -789,27 +835,39 @@ function calculateTeamStats(tasks, teamMembers) {
     return stats;
 }
 
-// Function to determine load status
-function getLoadStatus(hours) {
-    if (hours >= 40) {
-        return {
-            text: 'Overloaded',
-            class: 'bg-red-100 text-red-800'
-        };
-    } else if (hours >= 30) {
-        return {
-            text: 'High Load',
-            class: 'bg-yellow-100 text-yellow-800'
-        };
-    } else if (hours >= 20) {
-        return {
-            text: 'Normal Load',
-            class: 'bg-green-100 text-green-800'
-        };
-    } else {
-        return {
-            text: 'Light Load',
-            class: 'bg-blue-100 text-blue-800'
-        };
+// Function to handle CSV upload
+async function uploadCSV() {
+    const fileInput = document.getElementById('csvFile');
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('csvFile', file);
+
+    try {
+        // Show loading indicator
+        const uploadButton = document.querySelector('button[onclick="document.getElementById(\'csvFile\').click()"]');
+        uploadButton.textContent = 'Uploading...';
+        uploadButton.disabled = true;
+
+        const response = await fetch('/upload-csv', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('TD report upload successful');
+            // Optionally reload tasks or update UI
+        } else {
+            alert('Failed to process CSV data: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error uploading CSV:', error);
+        alert('Error uploading CSV');
+    } finally {
+        // Reset button state
+        uploadButton.textContent = 'Upload TD Report';
+        uploadButton.disabled = false;
     }
 }
