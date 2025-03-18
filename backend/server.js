@@ -32,7 +32,7 @@ app.post('/login', (req, res) => {
             success: true, 
             message: 'Login successful',
             role: user.role,
-            name: user.pegasusName
+            pegasusName: user.pegasusName
         });
     } else {
         res.json({ success: false, message: 'Invalid username or password' });
@@ -233,6 +233,120 @@ app.post('/update-tasks', (req, res) => {
         res.json({ success: false, message: 'Error updating tasks' });
     }
 });
+
+// Update individual task field
+app.post('/update-task', (req, res) => {
+    try {
+        const { taskId, field, value } = req.body;
+        
+        // Read the tasks file
+        const tasksPath = path.join(__dirname, 'db', 'pegasusTask.json');
+        const tasks = JSON.parse(fs.readFileSync(tasksPath, 'utf8'));
+        
+        // Find the task to update
+        const taskIndex = tasks.data.findIndex(t => String(t.id) === String(taskId));
+        
+        if (taskIndex === -1) {
+            console.log('Task not found:', { 
+                receivedId: taskId, 
+                availableIds: tasks.data.map(t => t.id)
+            });
+            return res.json({ 
+                success: false, 
+                message: 'Task not found' 
+            });
+        }
+
+        // Update the specific field
+        switch (field) {
+            case 'estimation':
+                tasks.data[taskIndex].estimation = value;
+                // Save to estimation history
+                saveEstimationHistory(taskId, value, tasks.data[taskIndex]);
+                break;
+            case 'notes':
+                tasks.data[taskIndex].notes = value;
+                // Save to notes history
+                saveNotesHistory(taskId, value, tasks.data[taskIndex]);
+                break;
+            case 'assignedTo':
+                tasks.data[taskIndex].user = value ? { pegasusName: value } : null;
+                break;
+            default:
+                return res.json({ 
+                    success: false, 
+                    message: 'Invalid field' 
+                });
+        }
+
+        // Save the updated tasks
+        fs.writeFileSync(tasksPath, JSON.stringify(tasks, null, 2));
+
+        res.json({ 
+            success: true, 
+            message: 'Task updated successfully',
+            updatedTask: tasks.data[taskIndex]
+        });
+    } catch (error) {
+        console.error('Error updating task:', error);
+        res.json({ 
+            success: false, 
+            message: 'Error updating task: ' + error.message 
+        });
+    }
+});
+
+// Function to save estimation history
+function saveEstimationHistory(taskId, estimation, taskData) {
+    if (estimation === null) return; // Don't save if no estimation
+
+    const historyPath = path.join(__dirname, 'db', 'estimationHistory.json');
+    let history = { entries: [] };
+
+    // Read existing history if it exists
+    if (fs.existsSync(historyPath)) {
+        history = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+    }
+
+    // Add new entry
+    history.entries.push({
+        taskId: String(taskId),
+        estimation,
+        projectName: taskData.project || taskData.projectName,
+        taskName: taskData.name || taskData.taskName,
+        timestamp: new Date().toISOString(),
+        updatedBy: 'admin' // You might want to pass the user info from the client
+    });
+
+    // Save updated history
+    fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+}
+
+// Function to save notes history
+function saveNotesHistory(taskId, notes, taskData) {
+    if (notes === null) return; // Don't save if no notes
+
+    const historyPath = path.join(__dirname, 'db', 'notesHistory.json');
+    let history = { entries: [] };
+
+    // Read existing history if it exists
+    if (fs.existsSync(historyPath)) {
+        history = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+    }
+
+    // Add new entry
+    history.entries.push({
+        taskId: String(taskId),
+        notes,
+        projectName: taskData.project || taskData.projectName,
+        taskName: taskData.name || taskData.taskName,
+        timestamp: new Date().toISOString(),
+        updatedBy: 'admin' // You might want to pass the user info from the client
+    });
+
+    // Save updated history
+    fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+}
 
 // Start the server
 app.listen(port, host, () => {

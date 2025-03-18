@@ -12,16 +12,21 @@
     <div class="w-64 bg-gray-800 text-white min-h-screen p-4" id="sidebar">
         <h2 class="text-xl font-bold mb-4">NKSystem</h2>
         <ul>
-            <li class="mb-2"><a href="dashboard-admin.html" class="block p-2 hover:bg-gray-700">Dashboard</a></li>
-            <li class="mb-2"><a href="manage-team.html" class="block p-2 hover:bg-gray-700">Manage Team Members</a></li>
+            <li class="mb-2"><a href="dashboard-admin.html" class="block p-2 hover:bg-gray-700 bg-gray-700">Dashboard</a></li>
+            <li class="mb-2"><a href="team-status.html" class="block p-2 hover:bg-gray-700">Team Status</a></li>
+            <li class="mb-2"><a href="manage-team.html" class="block p-2 hover:bg-gray-700">Team Members</a></li>
             <li class="mb-2"><a href="reports.html" class="block p-2 hover:bg-gray-700">Generate Reports</a></li>
         </ul>
     </div>
 
     <!-- Main Content -->
     <div class="flex-1 p-6">
-        <div class="flex justify-between mb-4">
-            <h1 class="text-2xl font-bold">Dashboard</h1>
+        <!-- Welcome message -->
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h1 class="text-2xl font-bold">Dashboard</h1>
+                <p class="text-gray-600" id="welcome-message">Welcome, <span id="user-name"></span></p>
+            </div>
             <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
         </div>
 
@@ -38,11 +43,10 @@
                         <th class="p-2 text-left border w-12">S.N.</th>
                         <th class="p-2 text-left border w-96">Project Name</th>
                         <th class="p-2 text-left border w-48">Task Name</th>
-                        <th class="p-2 text-left border">Assignee</th>
-                        <th class="p-2 text-left border">Label</th>
-                        <th class="p-2 text-left border">Estimation</th>
-                        <th class="p-2 text-left border flex-1">Notes</th>
-                        <th class="p-2 text-left border w-16">Link</th>
+                        <th class="p-2 text-left border w-40">Assignee</th>
+                        <th class="p-2 text-left border w-24">Estimation</th>
+                        <th class="p-2 text-left border w-[21.6rem]">Notes</th>
+                        <th class="p-2 text-left border w-12">Link</th>
                     </tr>
                 </thead>
                 <tbody id="task-list">
