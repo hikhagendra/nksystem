@@ -13,7 +13,6 @@
         <h2 class="text-xl font-bold mb-4">NKSystem</h2>
         <ul>
             <li class="mb-2"><a href="dashboard-user.html" class="block p-2 hover:bg-gray-700">Dashboard</a></li>
-            <li class="mb-2"><a href="time-tracking.html" class="block p-2 hover:bg-gray-700">Time Tracking</a></li>
         </ul>
     </div>
 
@@ -34,25 +33,28 @@
             <button onclick="document.getElementById('csvFile').click()" class="bg-blue-500 text-white px-4 py-2 rounded">Upload TD Report</button>
         </div>
 
-        <!-- Estimation Summary Card -->
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-700">Total Estimated Hours</h3>
-                    <p class="text-sm text-gray-500">All assigned tasks</p>
+        <!-- Summary Cards Grid -->
+        <div class="grid grid-cols-2 gap-6 mb-6">
+            <!-- Estimation Summary Card -->
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700">Total Estimated Hours</h3>
+                        <p class="text-sm text-gray-500">All assigned tasks</p>
+                    </div>
+                    <div class="text-2xl font-bold text-blue-600" id="total-estimation">0 hrs</div>
                 </div>
-                <div class="text-2xl font-bold text-blue-600" id="total-estimation">0</div>
             </div>
-        </div>
-        
-        <!-- Tracked Time Summary Card -->
-        <div class="bg-white p-4 rounded-lg shadow mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-700">Total Tracked Hours</h3>
-                    <p class="text-sm text-gray-500">All assigned tasks</p>
+            
+            <!-- Tracked Time Summary Card -->
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700">Total Tracked Hours</h3>
+                        <p class="text-sm text-gray-500">Today's tracked time</p>
+                    </div>
+                    <div class="text-2xl font-bold text-green-600" id="total-tracked">0 hrs</div>
                 </div>
-                <div class="text-2xl font-bold text-green-600" id="total-tracked">0</div>
             </div>
         </div>
         
@@ -67,6 +69,7 @@
                         <th class="p-2 text-left border w-24">Estimation</th>
                         <th class="p-2 text-left border w-[21.6rem]">Notes</th>
                         <th class="p-2 text-left border w-12">Link</th>
+                        <th class="p-2 text-center border w-20">Complete</th>
                     </tr>
                 </thead>
                 <tbody id="task-list">

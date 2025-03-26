@@ -174,7 +174,8 @@ app.get('/tasks', (req, res) => {
             status: task.primary_label || 'No Label',
             estimation: task.estimation || '',
             notes: task.notes || '',
-            link: task.permalink || '#'
+            link: task.permalink || '#',
+            completed: task.completed
         }));
 
         console.log('Successfully transformed tasks:', transformedTasks.length);
@@ -243,6 +244,13 @@ app.post('/update-task', (req, res) => {
     try {
         const { taskId, field, value } = req.body;
         
+        // Log the incoming request for debugging
+        console.log('Update task request:', {
+            taskId,
+            field,
+            value
+        });
+        
         // Read the tasks file
         const tasksPath = path.join(__dirname, 'db', 'pegasusTask.json');
         const tasks = JSON.parse(fs.readFileSync(tasksPath, 'utf8'));
@@ -251,10 +259,6 @@ app.post('/update-task', (req, res) => {
         const taskIndex = tasks.data.findIndex(t => String(t.id) === String(taskId));
         
         if (taskIndex === -1) {
-            console.log('Task not found:', { 
-                receivedId: taskId, 
-                availableIds: tasks.data.map(t => t.id)
-            });
             return res.json({ 
                 success: false, 
                 message: 'Task not found' 
@@ -265,16 +269,17 @@ app.post('/update-task', (req, res) => {
         switch (field) {
             case 'estimation':
                 tasks.data[taskIndex].estimation = value;
-                // Save to estimation history
                 saveEstimationHistory(taskId, value, tasks.data[taskIndex]);
                 break;
             case 'notes':
                 tasks.data[taskIndex].notes = value;
-                // Save to notes history
                 saveNotesHistory(taskId, value, tasks.data[taskIndex]);
                 break;
             case 'assignedTo':
                 tasks.data[taskIndex].user = value ? { pegasusName: value } : null;
+                break;
+            case 'completed':
+                tasks.data[taskIndex].completed = value;
                 break;
             default:
                 return res.json({ 
@@ -358,6 +363,7 @@ app.post('/upload-csv', upload.single('csvFile'), (req, res) => {
         return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
+    const userName = req.body.userName;
     const filePath = path.join(__dirname, req.file.path);
     const results = [];
 
@@ -367,9 +373,12 @@ app.post('/upload-csv', upload.single('csvFile'), (req, res) => {
         .on('end', () => {
             try {
                 // Process CSV data and store in JSON
-                storeTrackedData(results);
+                const stats = storeTrackedData(results, userName);
                 fs.unlinkSync(filePath); // Remove the uploaded file
-                res.json({ success: true, message: 'CSV data processed and stored successfully' });
+                res.json({ 
+                    success: true, 
+                    message: `CSV data processed successfully. ${stats.newEntriesAdded} new entries added, ${stats.duplicatesSkipped} duplicates skipped.`
+                });
             } catch (error) {
                 console.error('Error processing CSV data:', error);
                 res.status(500).json({ success: false, message: 'Error processing CSV data' });
@@ -382,35 +391,98 @@ app.post('/upload-csv', upload.single('csvFile'), (req, res) => {
 });
 
 // Function to store tracked data in JSON
-function storeTrackedData(csvData) {
+function storeTrackedData(csvData, userName) {
     const tasksFilePath = path.join(__dirname, 'db', 'pegasusTask.json');
     const trackedDataFilePath = path.join(__dirname, 'db', 'trackedData.json');
 
     // Read existing tasks
     const tasks = JSON.parse(fs.readFileSync(tasksFilePath, 'utf8')).data;
 
-    // Prepare tracked data structure
-    const trackedData = csvData.map(row => {
-        const csvTaskName = row['Task Name'].split(': ')[1]; // Extract task name after the colon
-        const decodedCsvTaskName = he.decode(csvTaskName); // Decode HTML entities
+    // Initialize default structure for tracked data
+    let trackedData = {
+        lastUpdated: new Date().toISOString(),
+        entries: []
+    };
+
+    // Try to read existing tracked data
+    try {
+        if (fs.existsSync(trackedDataFilePath)) {
+            const fileContent = fs.readFileSync(trackedDataFilePath, 'utf8');
+            if (fileContent.trim()) {
+                trackedData = JSON.parse(fileContent);
+            }
+        }
+    } catch (error) {
+        console.log('No existing tracked data found, starting fresh');
+    }
+
+    // Create a map of existing entries for duplicate checking
+    const existingEntriesMap = new Map();
+    trackedData.entries.forEach(entry => {
+        const key = `${entry.date}_${entry.person}_${entry.taskName}_${entry.startTime}`;
+        existingEntriesMap.set(key, entry);
+    });
+
+    // Prepare new tracked data entries
+    const newEntries = csvData.map(row => {
+        const fullTaskName = row['Task Name'] || '';
+        const taskNameParts = fullTaskName.split(': ');
+        const csvTaskName = taskNameParts.length > 1 ? taskNameParts[1] : fullTaskName;
 
         const trackedTime = parseFloat(row['Total Time (Decimal)']) || 0;
+        const date = row['Date'] || '';
+        const startTime = row['Start Time'] || '';
+
+        // Create unique key for this entry
+        const entryKey = `${date}_${userName}_${csvTaskName}_${startTime}`;
+
+        // If entry already exists, skip it
+        if (existingEntriesMap.has(entryKey)) {
+            return null;
+        }
 
         // Find the corresponding task by name
-        const task = tasks.find(t => he.decode(t.taskName) === decodedCsvTaskName);
+        const task = tasks.find(t => {
+            const systemTaskName = t.name || t.taskName || '';
+            return he.decode(systemTaskName) === he.decode(csvTaskName);
+        });
 
         return {
             taskId: task ? task.id : null,
             taskName: csvTaskName,
             trackedTime,
-            date: row['Date'],
-            project: row['Project'],
-            person: row['Person']
+            date,
+            project: row['Project'] || '',
+            person: userName || '',
+            startTime,
+            endTime: row['End Time'] || '',
+            totalTime: row['Total Time'] || '',
+            typeOfWork: row['Type of work'] || '',
+            uploadedAt: new Date().toISOString()
         };
     });
 
-    // Write tracked data to JSON file
+    // Filter out null entries (duplicates) and add new entries
+    const validNewEntries = newEntries.filter(entry => entry !== null);
+
+    // Add new entries to existing data
+    trackedData.entries = [
+        ...trackedData.entries,
+        ...validNewEntries
+    ];
+
+    // Update lastUpdated timestamp
+    trackedData.lastUpdated = new Date().toISOString();
+
+    // Write updated tracked data to JSON file
     fs.writeFileSync(trackedDataFilePath, JSON.stringify(trackedData, null, 2));
+
+    // Return some statistics about the operation
+    return {
+        totalProcessed: csvData.length,
+        newEntriesAdded: validNewEntries.length,
+        duplicatesSkipped: csvData.length - validNewEntries.length
+    };
 }
 
 function generateDailyReport() {
@@ -436,6 +508,35 @@ function generateDailyReport() {
 
     fs.writeFileSync(reportFilePath, JSON.stringify(reports, null, 2));
 }
+
+// Add this endpoint to handle clearing completed tasks
+app.post('/clear-completed-tasks', (req, res) => {
+    try {
+        const tasksPath = path.join(__dirname, 'db', 'pegasusTask.json');
+        const tasks = JSON.parse(fs.readFileSync(tasksPath, 'utf8'));
+
+        // Count completed tasks before removal
+        const completedCount = tasks.data.filter(task => task.completed === true).length;
+
+        // Remove completed tasks
+        tasks.data = tasks.data.filter(task => task.completed !== true);
+
+        // Save the updated tasks
+        fs.writeFileSync(tasksPath, JSON.stringify(tasks, null, 2));
+
+        res.json({ 
+            success: true, 
+            message: 'Completed tasks cleared successfully',
+            clearedCount: completedCount
+        });
+    } catch (error) {
+        console.error('Error clearing completed tasks:', error);
+        res.json({ 
+            success: false, 
+            message: 'Error clearing completed tasks: ' + error.message 
+        });
+    }
+});
 
 // Start the server
 app.listen(port, host, () => {

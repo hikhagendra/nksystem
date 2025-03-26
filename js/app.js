@@ -48,6 +48,16 @@ window.onload = function() {
             // Load tasks for both admin and user dashboards
             loadAndDisplayTasks();
         }
+    } else if (currentPath.includes('settings.html')) {
+        if (userRole !== 'admin') {
+            window.location.href = "dashboard-user.html";
+            return;
+        }
+        // Set welcome message
+        const userNameElement = document.getElementById('user-name');
+        if (userNameElement) {
+            userNameElement.textContent = userName || 'Admin';
+        }
     }
 };
 
@@ -77,7 +87,7 @@ document.getElementById("login-form")?.addEventListener("submit", function(event
             // Redirect based on role
             if (data.role === 'admin') {
                 window.location.href = "dashboard-admin.html";
-            } else {
+        } else {
                 window.location.href = "dashboard-user.html";
             }
         } else {
@@ -131,7 +141,7 @@ document.getElementById("add-member-form")?.addEventListener("submit", async fun
     } catch (error) {
         console.error('Error adding member:', error);
         alert('Error adding member. Please try again.');
-    }
+}
     });
 
 // Load all team members from the backend and display them
@@ -270,7 +280,7 @@ async function submitJsonData() {
             if (tasksData.success) {
                 displayTasks(tasksData.tasks);
                 alert('Tasks updated successfully. Existing estimations and notes have been preserved.');
-            } else {
+        } else {
                 throw new Error(tasksData.message || 'Error loading updated tasks');
             }
         } else {
@@ -337,7 +347,27 @@ function displayTasks(tasks) {
         tasks = tasks.filter(task => task.user?.pegasusName === userName);
         // Calculate and display total estimation
         const totalEstimation = calculateTotalEstimation(tasks);
-        updateTotalEstimation(totalEstimation);
+        const totalElement = document.getElementById('total-estimation');
+        if (totalElement) {
+            // Format the number to 1 decimal place if it has decimals
+            const formattedTotal = totalEstimation % 1 === 0 ? totalEstimation : totalEstimation.toFixed(1);
+            totalElement.innerHTML = `
+                <span class="text-3xl">${formattedTotal}</span>
+                <span class="text-lg ml-1">hrs</span>
+            `;
+
+            // Add color coding based on total hours
+            if (totalEstimation >= 40) {
+                totalElement.classList.add('text-red-600');
+                totalElement.classList.remove('text-blue-600', 'text-yellow-600');
+            } else if (totalEstimation >= 30) {
+                totalElement.classList.add('text-yellow-600');
+                totalElement.classList.remove('text-blue-600', 'text-red-600');
+            } else {
+                totalElement.classList.add('text-blue-600');
+                totalElement.classList.remove('text-yellow-600', 'text-red-600');
+            }
+        }
     }
 
     // First, get team members for the dropdown (only for admin)
@@ -360,6 +390,7 @@ function displayTasks(tasks) {
 // Function to calculate total estimation
 function calculateTotalEstimation(tasks) {
     return tasks.reduce((total, task) => {
+        // Ensure we're parsing the estimation value correctly
         const estimation = parseFloat(task.estimation) || 0;
         return total + estimation;
     }, 0);
@@ -391,20 +422,227 @@ function updateTotalEstimation(total) {
 }
 
 function displayTaskRows(tasks, teamMembers, userRole) {
+    // Add console log to verify task data
+    console.log('Task data being processed:', tasks.map(task => ({
+        id: task.id,
+        name: task.taskName,
+        completed: task.completed
+    })));
+
     const taskList = document.getElementById("task-list");
+    const currentUser = localStorage.getItem('userName');
     
+    // Filter tasks for current user
     if (userRole === 'user') {
-        // Calculate and display total estimation when rows are displayed
-        const totalEstimation = calculateTotalEstimation(tasks);
-        updateTotalEstimation(totalEstimation);
+        tasks = tasks.filter(task => task.user?.pegasusName === currentUser);
     }
 
+    // Fetch tracked data
+    fetch('/backend/db/trackedData.json')
+    .then(response => response.json())
+        .then(trackedData => {
+            // Calculate today's total tracked hours for the summary card
+            const today = new Date().toISOString().split('T')[0];
+            const todaysTrackedHours = trackedData.entries
+                .filter(entry => entry.date === today && entry.person === currentUser)
+                .reduce((total, entry) => total + (parseFloat(entry.trackedTime) || 0), 0);
+
+            // Update total tracked hours display
+            const totalTrackedElement = document.getElementById('total-tracked');
+            if (totalTrackedElement) {
+                totalTrackedElement.textContent = `${todaysTrackedHours.toFixed(2)} hrs`;
+                totalTrackedElement.classList.toggle('text-green-600', todaysTrackedHours > 0);
+                totalTrackedElement.classList.toggle('text-gray-600', todaysTrackedHours === 0);
+            }
+
+            // Create task rows with tracked data
+            tasks.forEach((task, index) => {
+            const row = document.createElement("tr");
+                row.classList.add("hover:bg-gray-50");
+                const taskId = String(task.id || task._id);
+                row.dataset.taskId = taskId;
+
+                // Calculate total tracked hours for this specific task
+                const taskTrackedHours = trackedData.entries
+                    .filter(entry => String(entry.taskId) === taskId)
+                    .reduce((total, entry) => total + (parseFloat(entry.trackedTime) || 0), 0);
+
+                const assignedTo = task.user?.pegasusName || '';
+                const estimatedHours = parseFloat(task.estimation) || 0;
+                const progressPercentage = Math.min((taskTrackedHours / estimatedHours) * 100, 100) || 0;
+                
+                // Determine progress bar color based on tracked vs estimated hours
+                const progressBarColor = taskTrackedHours > estimatedHours ? 'bg-red-500' : 'bg-green-500';
+
+                // Common row content for both admin and user
+                let rowContent = `
+                    <td class="p-2 border text-center w-12">${index + 1}</td>
+                    <td class="p-2 border w-96">${decodeHtmlEntities(task.projectName)}</td>
+                    <td class="p-2 border w-48">${decodeHtmlEntities(task.taskName)}</td>`;
+
+                // Admin-specific content
+                if (userRole === 'admin') {
+                    rowContent += `
+                        <td class="p-2 border w-40">
+                            <select class="w-full bg-transparent assignee-select" onchange="updateTaskField(this, 'assignedTo')">
+                                <option value="">Unassigned</option>
+                                ${teamMembers.map(member => 
+                                    `<option value="${member.pegasusName}" ${member.pegasusName === assignedTo ? 'selected' : ''}>
+                                        ${member.pegasusName}
+                                    </option>`
+                                ).join('')}
+                            </select>
+                </td>
+                        <td class="p-2 border w-24 estimation-cell" 
+                            ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'estimation')"
+                            data-estimation="${estimatedHours}">
+                            <div class="text-xs space-y-1">
+                                <div class="flex justify-between text-[10px] font-medium">
+                                    <span>Estimated</span>
+                                    <span class="estimation-value">${estimatedHours}hrs</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
+                                </div>
+                                <div class="flex justify-between text-[10px] font-medium">
+                                    <span>Tracked</span>
+                                    <span>${taskTrackedHours.toFixed(2)}hrs</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="${progressBarColor} h-1.5 rounded-full" 
+                                         style="width: ${progressPercentage}%"
+                                         title="${taskTrackedHours.toFixed(2)}hrs / ${estimatedHours}hrs"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-2 border w-[21.6rem] notes-cell text-left" 
+                            ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'notes')">
+                            <div class="whitespace-pre-wrap">${task.notes || '-'}</div>
+                        </td>
+                        <td class="p-2 border text-center w-12">
+                            <a href="${task.link}" 
+                               class="inline-block text-blue-500 hover:text-blue-700" 
+                               target="_blank" 
+                               title="Open task">
+                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                     class="h-5 w-5" 
+                                     fill="none" 
+                                     viewBox="0 0 24 24" 
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" 
+                                          stroke-linejoin="round" 
+                                          stroke-width="2" 
+                                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </td>`;
+                } else {
+                    // User-specific content
+                    rowContent += `
+                        <td class="p-2 border w-24">
+                            <div class="text-xs space-y-1">
+                                <div class="flex justify-between text-[10px] font-medium">
+                                    <span>Estimated</span>
+                                    <span>${estimatedHours}hrs</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
+                                </div>
+                                <div class="flex justify-between text-[10px] font-medium">
+                                    <span>Tracked</span>
+                                    <span>${taskTrackedHours.toFixed(2)}hrs</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="${progressBarColor} h-1.5 rounded-full" 
+                                         style="width: ${progressPercentage}%"
+                                         title="${taskTrackedHours.toFixed(2)}hrs / ${estimatedHours}hrs"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-2 border w-[21.6rem] text-left">
+                            <div class="whitespace-pre-wrap">${task.notes || '-'}</div>
+                        </td>
+                        <td class="p-2 border text-center w-12">
+                            <a href="${task.link}" 
+                               class="inline-block text-blue-500 hover:text-blue-700" 
+                               target="_blank" 
+                               title="Open task">
+                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                     class="h-5 w-5" 
+                                     fill="none" 
+                                     viewBox="0 0 24 24" 
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" 
+                                          stroke-linejoin="round" 
+                                          stroke-width="2" 
+                                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </td>`;
+                }
+
+                // Update the checkbox HTML with more explicit checking and debugging
+                const isCompleted = task.completed === true;
+                console.log(`Task ${task.id} completion status:`, isCompleted);
+
+                rowContent += `
+                    <td class="p-2 border text-center w-20">
+                        <input type="checkbox" 
+                               class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                               ${isCompleted ? 'checked' : ''}
+                               onchange="updateTaskCompletion(this, '${taskId}')"
+                               data-task-name="${task.taskName}"
+                               title="Mark task as completed">
+                    </td>`;
+
+                row.innerHTML = rowContent;
+                taskList.appendChild(row);
+        });
+    })
+    .catch(error => {
+            console.error('Error loading tracked data:', error);
+            displayTasksWithoutTracking(tasks, teamMembers, userRole);
+        });
+}
+
+// Helper function to display tasks when tracked data fails to load
+function displayTasksWithoutTracking(tasks, teamMembers, userRole) {
+    const currentUser = localStorage.getItem('userName');
+    
+    // Filter tasks for current user
+    if (userRole === 'user') {
+        tasks = tasks.filter(task => task.user?.pegasusName === currentUser);
+    }
+
+    // Calculate and display total estimation
+    const totalEstimation = tasks.reduce((total, task) => {
+        return total + (parseFloat(task.estimation) || 0);
+    }, 0);
+
+    const totalEstimationElement = document.getElementById('total-estimation');
+    if (totalEstimationElement) {
+        const formattedEstimation = totalEstimation % 1 === 0 ? 
+            totalEstimation : 
+            totalEstimation.toFixed(1);
+        totalEstimationElement.textContent = `${formattedEstimation} hrs`;
+    }
+
+    // Set tracked hours to 0 if data couldn't be loaded
+    const totalTrackedElement = document.getElementById('total-tracked');
+    if (totalTrackedElement) {
+        totalTrackedElement.textContent = '0.00 hrs';
+        totalTrackedElement.classList.add('text-gray-600');
+    }
+
+    // Create task rows without tracked data
     tasks.forEach((task, index) => {
-        const row = document.createElement("tr");
+            const row = document.createElement("tr");
         row.classList.add("hover:bg-gray-50");
-        row.dataset.taskId = String(task.id || task._id);
+        const taskId = String(task.id || task._id);
+        row.dataset.taskId = taskId;
 
         const assignedTo = task.user?.pegasusName || '';
+        const estimatedHours = task.estimation || 0;
         
         let rowContent = `
             <td class="p-2 border text-center w-12">${index + 1}</td>
@@ -412,31 +650,50 @@ function displayTaskRows(tasks, teamMembers, userRole) {
             <td class="p-2 border w-48">${decodeHtmlEntities(task.taskName)}</td>`;
 
         if (userRole === 'admin') {
-            const memberOptions = teamMembers.map(member => 
-                `<option value="${member.pegasusName}" ${member.pegasusName === assignedTo ? 'selected' : ''}>
-                    ${member.pegasusName}
-                </option>`
-            ).join('');
-
             rowContent += `
                 <td class="p-2 border w-40">
                     <select class="w-full bg-transparent assignee-select" onchange="updateTaskField(this, 'assignedTo')">
                         <option value="">Unassigned</option>
-                        ${memberOptions}
+                        ${teamMembers.map(member => 
+                            `<option value="${member.pegasusName}" ${member.pegasusName === assignedTo ? 'selected' : ''}>
+                                ${member.pegasusName}
+                            </option>`
+                        ).join('')}
                     </select>
                 </td>
-                <td class="p-2 border w-24 estimation-cell" ondblclick="makeEditable(this, 'estimation')">
-                    ${task.estimation || '-'}
+                <td class="p-2 border w-24 estimation-cell" 
+                    ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'estimation')"
+                    data-estimation="${estimatedHours}">
+                    <div class="text-xs space-y-1">
+                        <div class="flex justify-between text-[10px] font-medium">
+                            <span>Estimated</span>
+                            <span class="estimation-value">${estimatedHours}hrs</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
                 </td>
-                <td class="p-2 border w-[21.6rem] notes-cell" ondblclick="makeEditable(this, 'notes')">
-                    ${task.notes || '-'}
+                <td class="p-2 border w-[21.6rem] notes-cell text-left" 
+                    ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'notes')">
+                    <div class="whitespace-pre-wrap">${task.notes || '-'}</div>
                 </td>`;
         } else {
             rowContent += `
-                <td class="p-2 border w-24">${task.estimation || '-'}</td>
-                <td class="p-2 border w-[21.6rem] whitespace-pre-wrap">${task.notes || '-'}</td>`;
+                <td class="p-2 border w-24">
+                    <div class="text-xs space-y-1">
+                        <div class="flex justify-between text-[10px] font-medium">
+                            <span>Estimated</span>
+                            <span>${estimatedHours}hrs</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="p-2 border w-[21.6rem] text-left">
+                    <div class="whitespace-pre-wrap">${task.notes || '-'}</div>
+                </td>`;
         }
 
+        // Add Link column for both admin and user
         rowContent += `
             <td class="p-2 border text-center w-12">
                 <a href="${task.link}" 
@@ -456,6 +713,19 @@ function displayTaskRows(tasks, teamMembers, userRole) {
                 </a>
             </td>`;
 
+        // Update the checkbox HTML with more explicit checking and debugging
+        const isCompleted = task.completed === true;
+        
+        rowContent += `
+            <td class="p-2 border text-center w-20">
+                <input type="checkbox" 
+                       class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                       ${isCompleted ? 'checked' : ''}
+                       onchange="updateTaskCompletion(this, '${taskId}')"
+                       data-task-name="${task.taskName}"
+                       title="Mark task as completed">
+            </td>`;
+
         row.innerHTML = rowContent;
         taskList.appendChild(row);
     });
@@ -471,110 +741,341 @@ function isValidEstimation(value) {
 
 // Function to make cells editable
 function makeEditable(cell, field) {
-    // Close any other open editors first
-    closeAllEditors(cell);
-    
-    const currentValue = cell.textContent.trim();
-    const isEstimation = field === 'estimation';
-    const width = cell.offsetWidth;
-    
-    cell.innerHTML = `
-        <div class="relative" style="width: ${width}px">
-            ${isEstimation ? `
+    if (field === 'estimation') {
+        const currentValue = cell.dataset.estimation || '0';
+        
+        // First, make the cell position relative
+        cell.style.position = 'relative';
+        
+        // Create popup element with absolute positioning
+        const popup = document.createElement('div');
+        popup.className = 'absolute z-50 bg-white rounded-lg shadow-xl p-4 border';
+        popup.style.width = '300px';
+        popup.style.top = '100%'; // Position right below the cell
+        popup.style.left = '0';   // Align with left edge of cell
+        
+        popup.innerHTML = `
+            <div class="flex flex-col gap-3">
+                <div class="text-sm font-medium text-gray-700">Update Estimation</div>
                 <input type="number" 
-                       class="w-full p-1 border rounded text-sm"
-                       value="${currentValue === '-' ? '' : currentValue}"
+                       class="w-full p-2 border rounded text-sm"
+                       value="${currentValue}"
                        placeholder="Hours (e.g., 0.15, 1.5, 2)"
                        step="0.01" 
-                       min="0"
-                       onkeydown="handleEditKeydown(event, this, '${field}')" />
-            ` : `
-                <textarea
-                    class="w-full p-1 border rounded text-sm min-h-[60px] resize-y"
-                    placeholder="Add notes here..."
-                    onkeydown="handleEditKeydown(event, this, '${field}')"
-                >${currentValue === '-' ? '' : currentValue}</textarea>
-            `}
-            <div class="absolute -bottom-8 right-0 flex gap-1 bg-white shadow-md rounded border p-1 z-10">
-                <button onclick="saveEdit(this.parentElement.previousElementSibling, '${field}')" 
-                        class="px-2 py-0.5 text-xs text-white bg-green-500 rounded hover:bg-green-600" 
-                        title="Save">
-                    Save
-                </button>
-                <button onclick="cancelEdit(this.closest('td'), '${currentValue}')" 
-                        class="px-2 py-0.5 text-xs text-white bg-gray-500 rounded hover:bg-gray-600" 
-                        title="Cancel">
-                    Cancel
-                </button>
+                       min="0" />
+                <div class="flex justify-end gap-2">
+                    <button onclick="cancelEstimation()"
+                            class="px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200">
+                        Cancel
+                    </button>
+                    <button onclick="saveEstimation(this.parentElement.previousElementSibling, '${field}')"
+                            class="px-3 py-1.5 text-sm text-white bg-blue-500 rounded hover:bg-blue-600">
+                        Save
+                    </button>
+                </div>
             </div>
-        </div>
-    `;
-    
-    const input = cell.querySelector(isEstimation ? 'input' : 'textarea');
-    input.focus();
-    
-    // For textarea, place cursor at the end
-    if (!isEstimation) {
-        input.setSelectionRange(input.value.length, input.value.length);
-    }
-    
-    // Add click event listener to document to close editor when clicking outside
-    setTimeout(() => {
-        document.addEventListener('click', function closeEditor(e) {
-            if (!cell.contains(e.target)) {
-                cancelEdit(cell, currentValue);
-                document.removeEventListener('click', closeEditor);
+        `;
+        
+        // Remove any existing popups
+        const existingPopup = document.getElementById('estimation-popup');
+        if (existingPopup) {
+            existingPopup.remove();
+        }
+        
+        popup.id = 'estimation-popup';
+        
+        // Add popup to the cell instead of body
+        cell.appendChild(popup);
+        
+        const input = popup.querySelector('input');
+        input.focus();
+        input.select();
+        
+        // Add click outside listener
+        document.addEventListener('click', function closePopup(e) {
+            if (!popup.contains(e.target) && !cell.contains(e.target)) {
+                cancelEstimation();
+                document.removeEventListener('click', closePopup);
             }
         });
-    }, 0);
-}
-
-// Function to close all open editors except the current one
-function closeAllEditors(currentCell) {
-    const editors = document.querySelectorAll('.estimation-cell, .notes-cell');
-    editors.forEach(cell => {
-        if (cell !== currentCell && cell.querySelector('input')) {
-            const originalValue = cell.querySelector('input').defaultValue;
-            cancelEdit(cell, originalValue);
+        
+        // Add keyboard listener
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveEstimation(input, field);
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                cancelEstimation();
+            }
+        });
+    } else if (field === 'notes') {
+        const currentValue = cell.textContent.trim();
+        const notes = currentValue === '-' ? '' : currentValue;
+        
+        cell.style.position = 'relative';
+        
+        const popup = document.createElement('div');
+        popup.className = 'absolute z-50 bg-white rounded-lg shadow-xl border border-gray-200';
+        popup.style.width = '400px';
+        popup.style.top = 'calc(100% + 5px)';
+        popup.style.left = '0';
+        
+        popup.innerHTML = `
+            <div class="flex flex-col space-y-2">
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <div class="text-sm font-medium text-gray-700">Update Notes</div>
+                </div>
+                <div class="px-4 pb-4">
+                    <textarea
+                        class="w-full p-3 border rounded-md text-sm min-h-[120px] resize-y focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        placeholder="Add notes here..."
+                    >${notes}</textarea>
+                </div>
+                <div class="px-4 py-3 bg-gray-50 rounded-b-lg flex justify-end gap-2 border-t border-gray-200">
+                    <button onclick="cancelNotes()"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancel
+                    </button>
+                    <button onclick="saveNotes(this.parentElement.previousElementSibling.querySelector('textarea'), 'notes')"
+                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Save
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Remove any existing popups
+        const existingPopup = document.getElementById('notes-popup');
+        if (existingPopup) {
+            existingPopup.remove();
         }
-    });
+        
+        popup.id = 'notes-popup';
+        cell.appendChild(popup);
+        
+        // Focus and select the textarea content
+        const textarea = popup.querySelector('textarea');
+        textarea.focus();
+        textarea.select();
+        
+        // Add click outside listener
+        document.addEventListener('click', function closePopup(e) {
+            if (!popup.contains(e.target) && !cell.contains(e.target)) {
+                cancelNotes();
+                document.removeEventListener('click', closePopup);
+            }
+        });
+        
+        // Add keyboard listener
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                cancelNotes();
+            }
+            // Allow Enter for new lines in textarea
+        });
+    }
 }
 
-// Handle keydown events for editable cells
-function handleEditKeydown(event, input, field) {
-    if (field === 'notes') {
-        // For notes, only handle Escape key
-        if (event.key === 'Escape') {
-            event.preventDefault();
-            cancelEdit(input.closest('td'), input.defaultValue);
-        }
-        // Allow Enter key for new lines in notes
-        return;
-    }
-    
-    // For estimation, handle both Enter and Escape
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        saveEdit(input, field);
-    } else if (event.key === 'Escape') {
-        event.preventDefault();
-        cancelEdit(input.closest('td'), input.defaultValue);
-    }
-}
-
-// Function to save edit
-function saveEdit(input, field) {
-    if (field === 'estimation' && !isValidEstimation(input.value)) {
+// Updated save estimation function
+async function saveEstimation(input, field) {
+    if (!isValidEstimation(input.value)) {
         alert('Please enter a valid number');
         return;
     }
-    updateTaskField(input, field);
+
+    const popup = document.getElementById('estimation-popup');
+    const cell = popup.parentElement;
+    const newValue = parseFloat(input.value);
+    const row = cell.closest('tr');
+    const taskId = row.dataset.taskId;
+
+    try {
+        const response = await fetch('/update-task', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                taskId: taskId,
+                field: field,
+                value: newValue
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Remove the relative positioning from the cell
+            cell.style.position = '';
+            // Remove popup
+            popup.remove();
+            // Remove editing flag
+            cell.removeAttribute('data-editing');
+
+            // Update just the cell content instead of reloading the whole table
+            const trackedHours = parseFloat(cell.querySelector('.flex:nth-child(3) span:last-child').textContent) || 0;
+            const progressPercentage = Math.min((trackedHours / newValue) * 100, 100) || 0;
+            const progressBarColor = trackedHours > newValue ? 'bg-red-500' : 'bg-green-500';
+
+            cell.innerHTML = `
+                <div class="text-xs space-y-1">
+                    <div class="flex justify-between text-[10px] font-medium">
+                        <span>Estimated</span>
+                        <span class="estimation-value">${newValue}hrs</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] font-medium">
+                        <span>Tracked</span>
+                        <span>${trackedHours.toFixed(2)}hrs</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                        <div class="${progressBarColor} h-1.5 rounded-full" 
+                             style="width: ${progressPercentage}%"
+                             title="${trackedHours.toFixed(2)}hrs / ${newValue}hrs"></div>
+                    </div>
+                </div>
+            `;
+
+            // Update the data-estimation attribute
+            cell.dataset.estimation = newValue;
+
+            // Reattach the double-click handler
+            cell.ondblclick = () => {
+                cell.setAttribute('data-editing', 'true');
+                makeEditable(cell, 'estimation');
+            };
+
+            // If we need to update the total estimation
+            if (localStorage.getItem("userRole") === "user") {
+                updateTotalEstimation();
+            }
+        } else {
+            throw new Error(data.message || 'Failed to update estimation');
+        }
+    } catch (error) {
+        console.error('Error updating estimation:', error);
+        alert(error.message || 'Failed to update estimation');
+    }
 }
 
-// Function to cancel edit
-function cancelEdit(cell, originalValue) {
-    if (!cell.contains(document.activeElement)) return; // Prevent duplicate cancellations
-    cell.textContent = originalValue === '' ? '-' : originalValue;
+// Add this new function to update total estimation without reloading
+function updateTotalEstimation() {
+    const taskList = document.getElementById("task-list");
+    const rows = taskList.getElementsByTagName('tr');
+    let total = 0;
+
+    for (const row of rows) {
+        const estimationCell = row.querySelector('.estimation-cell');
+        if (estimationCell) {
+            const estimation = parseFloat(estimationCell.dataset.estimation) || 0;
+            total += estimation;
+        }
+    }
+
+    const totalElement = document.getElementById('total-estimation');
+    if (totalElement) {
+        const formattedTotal = total % 1 === 0 ? total : total.toFixed(1);
+        totalElement.innerHTML = `${formattedTotal} hrs`;
+
+        // Update color coding
+        if (total >= 40) {
+            totalElement.classList.add('text-red-600');
+            totalElement.classList.remove('text-blue-600', 'text-yellow-600');
+        } else if (total >= 30) {
+            totalElement.classList.add('text-yellow-600');
+            totalElement.classList.remove('text-blue-600', 'text-red-600');
+        } else {
+            totalElement.classList.add('text-blue-600');
+            totalElement.classList.remove('text-yellow-600', 'text-red-600');
+        }
+    }
+}
+
+// Updated cancel estimation function
+function cancelEstimation() {
+    const popup = document.getElementById('estimation-popup');
+    if (popup) {
+        // Remove the relative positioning from the cell
+        const cell = popup.parentElement;
+        cell.style.position = '';
+        popup.remove();
+    }
+    
+    // Remove editing flag from cell
+    const editingCell = document.querySelector('.estimation-cell[data-editing="true"]');
+    if (editingCell) {
+        editingCell.removeAttribute('data-editing');
+    }
+}
+
+// Update the cancelNotes function
+function cancelNotes() {
+    const popup = document.getElementById('notes-popup');
+    if (popup) {
+        // Remove the relative positioning from the cell
+        const cell = popup.parentElement;
+        cell.style.position = '';
+        popup.remove();
+    }
+    
+    // Remove editing flag from cell
+    const editingCell = document.querySelector('.notes-cell[data-editing="true"]');
+    if (editingCell) {
+        editingCell.removeAttribute('data-editing');
+    }
+}
+
+// Update the saveNotes function to maintain the structure
+async function saveNotes(textarea, field) {
+    const popup = document.getElementById('notes-popup');
+    const cell = popup.parentElement;
+    const newValue = textarea.value.trim();
+    const row = cell.closest('tr');
+    const taskId = row.dataset.taskId;
+
+    try {
+        const response = await fetch('/update-task', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                taskId: taskId,
+                field: field,
+                value: newValue || null
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Remove the relative positioning from the cell
+            cell.style.position = '';
+            // Remove popup
+            popup.remove();
+            // Remove editing flag
+            cell.removeAttribute('data-editing');
+            
+            // Update the cell content without refreshing
+            cell.innerHTML = `<div class="whitespace-pre-wrap">${newValue || '-'}</div>`;
+            
+            // Reattach the double-click handler
+            cell.ondblclick = () => {
+                cell.setAttribute('data-editing', 'true');
+                makeEditable(cell, 'notes');
+            };
+        } else {
+            throw new Error(data.message || 'Failed to update notes');
+        }
+    } catch (error) {
+        console.error('Error updating notes:', error);
+        alert(error.message || 'Failed to update notes');
+        cell.classList.remove('opacity-50');
+    }
 }
 
 // Update task field function
@@ -835,7 +1336,56 @@ function calculateTeamStats(tasks, teamMembers) {
     return stats;
 }
 
-// Function to handle CSV upload
+// Function to calculate today's tracked hours for the current user
+async function updateTodayTrackedHours() {
+    try {
+        const response = await fetch('/backend/db/trackedData.json');
+        const trackedData = await response.json();
+        
+        // Get today's date in the format "YYYY-MM-DD"
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Get current user's name from localStorage
+        const currentUser = localStorage.getItem('userName');
+        
+        // Filter entries for today and current user
+        const todaysEntries = trackedData.entries.filter(entry => 
+            entry.date === today && 
+            entry.person === currentUser
+        );
+
+        // Sum up all tracked time for today's entries
+        const totalTrackedHours = todaysEntries.reduce((total, entry) => {
+            return total + (parseFloat(entry.trackedTime) || 0);
+        }, 0);
+
+        // Round to 2 decimal places and add "hrs"
+        const roundedTotal = Math.round(totalTrackedHours * 100) / 100;
+        
+        // Update the display with proper formatting
+        const totalTrackedElement = document.getElementById('total-tracked');
+        totalTrackedElement.textContent = `${roundedTotal.toFixed(2)} hrs`;
+
+        // Optional: Add some color coding based on hours tracked
+        if (roundedTotal > 0) {
+            totalTrackedElement.classList.add('text-green-600');
+        } else {
+            totalTrackedElement.classList.add('text-gray-600');
+        }
+
+    } catch (error) {
+        console.error('Error calculating today\'s tracked hours:', error);
+        document.getElementById('total-tracked').textContent = '0.00 hrs';
+    }
+}
+
+// Make sure this function is called when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // ... other initialization code ...
+    updateTodayTrackedHours();
+});
+
+// Update the uploadCSV function to refresh the tracked hours after successful upload
 async function uploadCSV() {
     const fileInput = document.getElementById('csvFile');
     const file = fileInput.files[0];
@@ -843,10 +1393,11 @@ async function uploadCSV() {
 
     const formData = new FormData();
     formData.append('csvFile', file);
+    formData.append('userName', localStorage.getItem('userName'));
 
+    const uploadButton = document.querySelector('button[onclick="document.getElementById(\'csvFile\').click()"]');
+    
     try {
-        // Show loading indicator
-        const uploadButton = document.querySelector('button[onclick="document.getElementById(\'csvFile\').click()"]');
         uploadButton.textContent = 'Uploading...';
         uploadButton.disabled = true;
 
@@ -856,18 +1407,96 @@ async function uploadCSV() {
         });
 
         const result = await response.json();
+        
         if (result.success) {
-            alert('TD report upload successful');
-            // Optionally reload tasks or update UI
+            alert(result.message);
+            fileInput.value = '';
+            // Refresh the tracked hours display after successful upload
+            await updateTodayTrackedHours();
         } else {
-            alert('Failed to process CSV data: ' + result.message);
+            throw new Error(result.message || 'Failed to process CSV data');
         }
     } catch (error) {
         console.error('Error uploading CSV:', error);
-        alert('Error uploading CSV');
+        alert('Error uploading CSV: ' + (error.message || 'Unknown error'));
     } finally {
-        // Reset button state
         uploadButton.textContent = 'Upload TD Report';
         uploadButton.disabled = false;
+    }
+}
+
+// Add new function to handle task completion updates
+async function updateTaskCompletion(checkbox, taskId) {
+    const isCompleted = checkbox.checked;
+    const row = checkbox.closest('tr');
+    
+    try {
+        // Add loading state
+        checkbox.disabled = true;
+        
+        // Log the taskId for debugging
+        console.log('Updating task completion:', {
+            taskId: taskId,
+            isCompleted: isCompleted
+        });
+
+        const response = await fetch('/update-task', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                taskId: String(taskId), // Ensure taskId is a string
+                field: 'completed',
+                value: isCompleted
+            })
+        });
+
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.message || 'Failed to update task completion status');
+        }
+
+        // Visual feedback for success
+        const taskName = row.querySelector('td:nth-child(3)').textContent;
+        console.log(`Successfully ${isCompleted ? 'completed' : 'uncompleted'} task: ${taskName}`);
+
+    } catch (error) {
+        console.error('Error updating task completion:', error);
+        // More detailed error message
+        alert(`Error updating task completion status: ${error.message}`);
+        // Revert checkbox
+        checkbox.checked = !isCompleted;
+    } finally {
+        // Re-enable checkbox
+        checkbox.disabled = false;
+    }
+}
+
+// Add this function to handle clearing completed tasks
+async function clearCompletedTasks() {
+    if (!confirm('Are you sure you want to clear all completed tasks? This action cannot be undone.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/clear-completed-tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert(`Successfully cleared ${data.clearedCount} completed tasks.`);
+        } else {
+            throw new Error(data.message || 'Failed to clear completed tasks');
+        }
+    } catch (error) {
+        console.error('Error clearing completed tasks:', error);
+        alert('Error clearing completed tasks: ' + error.message);
     }
 }
