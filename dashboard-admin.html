@@ -37,14 +37,23 @@
         </div>
         
         <div>
-            <h2 class="text-lg font-bold mb-2">Tasks</h2>
-            <table class="w-full bg-white shadow-md rounded border-collapse">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold">Tasks</h2>
+                <input 
+                    type="text" 
+                    id="taskSearch" 
+                    class="w-1/3 p-2 border rounded" 
+                    placeholder="Search tasks..." 
+                    onkeyup="filterTasks()"
+                />
+            </div>
+            <table class="w-full bg-white shadow-md rounded border-collapse" id="admin-tasks">
                 <thead>
                     <tr class="bg-gray-100">
-                        <th class="p-2 text-left border w-12">S.N.</th>
-                        <th class="p-2 text-left border w-96">Project Name</th>
-                        <th class="p-2 text-left border w-48">Task Name</th>
-                        <th class="p-2 text-left border w-40">Assignee</th>
+                        <th class="p-2 text-left border w-12" data-type="number">S.N.</th>
+                        <th class="p-2 text-left border w-96" data-type="string">Project Name</th>
+                        <th class="p-2 text-left border w-48" data-type="string">Task Name</th>
+                        <th class="p-2 text-left border w-40" data-type="string">Assignee</th>
                         <th class="p-2 text-left border w-24">Estimation</th>
                         <th class="p-2 text-left border w-[21.6rem]">Notes</th>
                         <th class="p-2 text-left border w-12">Link</th>

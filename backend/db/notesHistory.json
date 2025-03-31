@@ -1,4 +1,412 @@
 {
   "entries": [
+    {
+      "taskId": "129156",
+      "notes": "2FA needed",
+      "projectName": "David Appelbaum, PSY.D. [Website: WP]",
+      "taskName": "SMTP Email Integration",
+      "timestamp": "2025-03-28T04:31:10.891Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "337145",
+      "notes": "Reach out to Sujan for GSC verification.",
+      "projectName": "Solar Energy Solutions of America NEW [SEO]",
+      "taskName": "Backlink Health Check",
+      "timestamp": "2025-03-28T04:55:53.836Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "341955",
+      "notes": "Consult with Aman",
+      "projectName": "All County Window Cleaning ",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-03-28T05:09:44.410Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "344202",
+      "notes": "Consult with Bidur sir. Looks like dev work needed.",
+      "projectName": "GoldMark Creative[SEO]",
+      "taskName": "Project Tags",
+      "timestamp": "2025-03-28T05:21:41.507Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "346220",
+      "notes": "We don't create dev for MODX. Should be assigned to BED.",
+      "projectName": "Alliance One [SEO]",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-03-28T05:30:16.034Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "348006",
+      "notes": "Must consult with us.",
+      "projectName": "Sentinel Consulting [Ad Hoc]",
+      "taskName": "Meet our Team",
+      "timestamp": "2025-03-28T05:37:42.095Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349901",
+      "notes": "Must consult with Ujjwel sir",
+      "projectName": "Arrowhead Manor [SEO]",
+      "taskName": "Website Photo",
+      "timestamp": "2025-03-28T05:41:42.720Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351183",
+      "notes": "Must consult with Ujjwel sir",
+      "projectName": "Nexum Group Inc [PPC]",
+      "taskName": "Website Verification ",
+      "timestamp": "2025-03-28T05:47:40.558Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351184",
+      "notes": "Verify if we have everything to proceed. Then accordingly we can adjust estimation.",
+      "projectName": "Coastal Capital Lending [SEO]",
+      "taskName": "Webpage Implementation",
+      "timestamp": "2025-03-28T05:50:02.481Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351293",
+      "notes": "Confirm everything with Saroj sir and push live on monday.",
+      "projectName": "Honey Do Men [SEO Setup]",
+      "taskName": "Team Removal",
+      "timestamp": "2025-03-28T05:51:23.996Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351416",
+      "notes": "Update the access details in the WB as well.",
+      "projectName": "Solar Energy Solutions of America NEW [SEO]",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-28T05:54:07.905Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351417",
+      "notes": "Update the access details in the WB as well.",
+      "projectName": "AC-EZ [SEO]",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-28T05:56:21.960Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351418",
+      "notes": "Update the access details in the WB as well.",
+      "projectName": "RoofEZ [SEO] ",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-28T05:57:50.798Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351533",
+      "notes": "Is that section available on the other pages? Check the feasibility and give estimation.",
+      "projectName": "Impulse Enterprises [SEO]",
+      "taskName": "update design to include why us section at bottom",
+      "timestamp": "2025-03-28T06:02:14.917Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "129156",
+      "notes": "comment reagrdaing there availabilty",
+      "projectName": "David Appelbaum, PSY.D. [Website: WP]",
+      "taskName": "SMTP Email Integration",
+      "timestamp": "2025-03-31T04:18:47.199Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351770",
+      "notes": "Seems like malware do a malware scan",
+      "projectName": "NFC Academy [Website: WP]",
+      "taskName": "Cant Access Login",
+      "timestamp": "2025-03-31T04:27:19.724Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "334158",
+      "notes": "Critical client, do draft and take confirmation, then publish",
+      "projectName": "Hartman Executive Advisors [SEO]",
+      "taskName": "The Ultimate Guide to ERP For General Contractors and Real Estate Developers",
+      "timestamp": "2025-03-31T04:33:33.378Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351533",
+      "notes": "Ask, What content will it have?                         \n            \n                \n                    Update Notes\n                \n                \n                    Is that section available on the other pages? Check the feasibility and give estimation.\n                \n                \n                    \n                        Cancel\n                    \n                    \n                        Save",
+      "projectName": "Impulse Enterprises [SEO]",
+      "taskName": "update design to include why us section at bottom",
+      "timestamp": "2025-03-31T04:43:31.906Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351533",
+      "notes": "Ask, What content will it have?",
+      "projectName": "Impulse Enterprises [SEO]",
+      "taskName": "update design to include why us section at bottom",
+      "timestamp": "2025-03-31T04:43:55.066Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351608",
+      "notes": "Reach out to Uma DD, the maintenance task is on her, she might have been cleaning the site. Also ask if we can assign her the task if she is cleaning the malware on maintenance task",
+      "projectName": "Symmetry Counseling [SEO]",
+      "taskName": "Client&amp;#039;s site may be compromised",
+      "timestamp": "2025-03-31T04:49:39.398Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "334154",
+      "notes": "Cautiously work on the draft first.",
+      "projectName": "Hartman Executive Advisors [SEO]",
+      "taskName": "The Key to Success in 2025 is an Effective IT Strategy",
+      "timestamp": "2025-03-31T04:51:42.314Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "334155",
+      "notes": "Cautiously work on the draft first.",
+      "projectName": "Hartman Executive Advisors [SEO]",
+      "taskName": "The Struggle to Hire and Retain a CIO: Why Companies Are Turning to Outsourced CIO Services",
+      "timestamp": "2025-03-31T04:51:46.649Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "334156",
+      "notes": "Cautiously work on the draft first.",
+      "projectName": "Hartman Executive Advisors [SEO]",
+      "taskName": "Integrating AI into Professional Services: Enhancing Outcomes for Clients and Staff",
+      "timestamp": "2025-03-31T04:51:50.335Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351761",
+      "notes": "Review the site thoroughly",
+      "projectName": "Impulse Enterprises [SEO]",
+      "taskName": "update plugins",
+      "timestamp": "2025-03-31T04:57:09.921Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "345761",
+      "notes": "Analyze and give estimation first. Check the login access as well.",
+      "projectName": "CDC Detailing",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T04:58:52.202Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "343432",
+      "notes": "Analyze and give estimation first. Check the login access as well.",
+      "projectName": "Function + Form",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T04:59:40.616Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "337513",
+      "notes": "HP",
+      "projectName": "Rinse Prince [SEO]",
+      "taskName": "Redirects Setup",
+      "timestamp": "2025-03-31T05:01:13.206Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "270165",
+      "notes": "High Priority treat as 24hr, check if maintenance is available",
+      "projectName": "Covenant Landscapes [SEO]",
+      "taskName": "Malware Cleaning *O*",
+      "timestamp": "2025-03-31T05:05:32.137Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351759",
+      "notes": "Out to Rajan sir",
+      "projectName": "Renaissance Plastic Surgery [SEO]",
+      "taskName": "Page Template",
+      "timestamp": "2025-03-31T05:07:05.443Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "335149",
+      "notes": "need account to check if license are multisite",
+      "projectName": "BioHelpers",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-03-31T05:07:22.201Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "346994",
+      "notes": "Update WP login credentials in Passbolt.\nMake sure we have all access first, if yes then proceed.",
+      "projectName": "MedConnect USA [SEO]",
+      "taskName": "Backlink Health Check",
+      "timestamp": "2025-03-31T05:14:50.368Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "341115",
+      "notes": "Coordinate with Ujjwel sir",
+      "projectName": "Discovery Senior Living - Morada Locations",
+      "taskName": "Update Amenities Page ",
+      "timestamp": "2025-03-31T05:22:32.547Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351432",
+      "notes": "Just comment",
+      "projectName": "Rinse Prince [SEO]",
+      "taskName": "Redirects Setup - Live Site *R*",
+      "timestamp": "2025-03-31T05:25:29.713Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "332466",
+      "notes": "Analyze and give estimation first. Check if we have all access also.",
+      "projectName": "Rylee Home Services [SEO]",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T05:29:35.226Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351416",
+      "notes": "Follow the video guide",
+      "projectName": "Solar Energy Solutions of America NEW [SEO]",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-31T05:36:50.309Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351417",
+      "notes": "Follow the video guide",
+      "projectName": "AC-EZ [SEO]",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-31T05:37:55.721Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351418",
+      "notes": "Follow the video guide",
+      "projectName": "RoofEZ [SEO] ",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-31T05:38:36.743Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351487",
+      "notes": "This is not reliable option, please ask for WP mail pro license.",
+      "projectName": "Eveready Express [PPC]",
+      "taskName": "SMTP",
+      "timestamp": "2025-03-31T05:41:45.829Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351487",
+      "notes": "This is not reliable option, please ask for WP mail pro license. Attach supporting documentation from plugin developer.",
+      "projectName": "Eveready Express [PPC]",
+      "taskName": "SMTP",
+      "timestamp": "2025-03-31T05:42:11.519Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350454",
+      "notes": "Coordinate with Ujjwel sir",
+      "projectName": "Hair Oh Yeah [SEO]",
+      "taskName": "Create a page for &amp;quot;Expanding Our Reach&amp;quot;",
+      "timestamp": "2025-03-31T05:45:40.628Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350449",
+      "notes": "Coordinate with Manshi miss",
+      "projectName": "Friendly Global",
+      "taskName": "Women&amp;#039;s Travel Guide Update",
+      "timestamp": "2025-03-31T05:46:52.654Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350457",
+      "notes": "Coordinate with Ujjwel sir",
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "Standardize Address Formatting on Contact Page ( Dev Site)",
+      "timestamp": "2025-03-31T05:48:21.025Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351753",
+      "notes": "hp",
+      "projectName": "Certainty Painting [SEO]",
+      "taskName": "Contact page fixes",
+      "timestamp": "2025-03-31T05:48:41.990Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "255734",
+      "notes": "Read the previous comments first to understand the context.",
+      "projectName": "Harveys Five Star Roofing [SEO]",
+      "taskName": "Content Implementation ($Month)",
+      "timestamp": "2025-03-31T05:55:02.791Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349551",
+      "notes": "Implement those 3 posts.\nThis is archive: https://mightyrep.com/b2b-marketing-solutions-increase-sales-leads/",
+      "projectName": "MightyRep [SEO]",
+      "taskName": "Checking redirects after client migrated site",
+      "timestamp": "2025-03-31T06:26:30.485Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "144006",
+      "notes": "WP password changed | Consult with Bidur sir",
+      "projectName": "PTCNJ [SEO Setup]",
+      "taskName": "Malware Cleaning *O*",
+      "timestamp": "2025-03-31T07:14:31.392Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351595",
+      "notes": "Marked completed by PM",
+      "projectName": "Sam Aguiar [SEO]",
+      "taskName": "Add breadcrumbs throughout the website",
+      "timestamp": "2025-03-31T07:22:26.809Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "342551",
+      "notes": "Check if updating in one place resolves all the issues at once.",
+      "projectName": "Laser and Skin Surgery Center [SEO]",
+      "taskName": "Backlink Health Check",
+      "timestamp": "2025-03-31T07:29:01.135Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "342551",
+      "notes": "Check if updating in one place resolves all the issues at once. Reset the due date saying \"The site's bandwidth issue has been resolved so we are proceeding with the task.\"",
+      "projectName": "Laser and Skin Surgery Center [SEO]",
+      "taskName": "Backlink Health Check",
+      "timestamp": "2025-03-31T07:31:02.089Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349738",
+      "notes": "Confirm with Bidur sir",
+      "projectName": "QC Spa",
+      "taskName": "Site Backup",
+      "timestamp": "2025-03-31T07:42:52.021Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349744",
+      "notes": "Confirm with Bidur sir",
+      "projectName": "QC Spa",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-03-31T07:43:00.476Z",
+      "updatedBy": "admin"
+    }
   ]
 }

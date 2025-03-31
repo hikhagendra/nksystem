@@ -1,4 +1,588 @@
 {
   "entries": [
+    {
+      "taskId": "350429",
+      "estimation": 0.75,
+      "projectName": "All County Window Cleaning ",
+      "taskName": "Transfer Hosting ",
+      "timestamp": "2025-03-28T04:27:06.881Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "129156",
+      "estimation": 0.25,
+      "projectName": "David Appelbaum, PSY.D. [Website: WP]",
+      "taskName": "SMTP Email Integration",
+      "timestamp": "2025-03-28T04:31:00.051Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "238327",
+      "estimation": 1.5,
+      "projectName": "Redhead Barrels SEO",
+      "taskName": "Internal Linking",
+      "timestamp": "2025-03-28T04:33:32.554Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "289886",
+      "estimation": 0.75,
+      "projectName": "The Law Offices of Matthew J. Jowanna, P.A. [SEO]",
+      "taskName": "Internal Linking",
+      "timestamp": "2025-03-28T04:34:54.527Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "293304",
+      "estimation": 1,
+      "projectName": "Calm Seas Coaching [SEO]",
+      "taskName": "Malware Cleaning *O*",
+      "timestamp": "2025-03-28T04:53:13.718Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "337145",
+      "estimation": 0.75,
+      "projectName": "Solar Energy Solutions of America NEW [SEO]",
+      "taskName": "Backlink Health Check",
+      "timestamp": "2025-03-28T04:56:02.902Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "340097",
+      "estimation": 1,
+      "projectName": "RoofEZ [SEO] ",
+      "taskName": "Identify Linkable Assets",
+      "timestamp": "2025-03-28T04:59:42.799Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "341955",
+      "estimation": 1,
+      "projectName": "All County Window Cleaning ",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-03-28T05:09:32.607Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "343375",
+      "estimation": 1,
+      "projectName": "C&amp;amp;J Metals [SEO]",
+      "taskName": "Adding Keywords",
+      "timestamp": "2025-03-28T05:12:50.019Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "344063",
+      "estimation": 0.75,
+      "projectName": "Essentials in Writing [SEO]",
+      "taskName": "Backlink Health Check",
+      "timestamp": "2025-03-28T05:15:02.738Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "344191",
+      "estimation": 1,
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "add/update Creative Arts Therapy program page",
+      "timestamp": "2025-03-28T05:17:29.540Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "345071",
+      "estimation": 0.25,
+      "projectName": "Sandusky Milan RV Park [SEO]",
+      "taskName": "Site Backup",
+      "timestamp": "2025-03-28T05:26:46.745Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "346220",
+      "estimation": 0.5,
+      "projectName": "Alliance One [SEO]",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-03-28T05:29:33.795Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "347979",
+      "estimation": 1,
+      "projectName": "AC-EZ [SEO]",
+      "taskName": "Site Backup",
+      "timestamp": "2025-03-28T05:33:33.130Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "348006",
+      "estimation": 1,
+      "projectName": "Sentinel Consulting [Ad Hoc]",
+      "taskName": "Meet our Team",
+      "timestamp": "2025-03-28T05:37:31.759Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "348006",
+      "estimation": 1.5,
+      "projectName": "Sentinel Consulting [Ad Hoc]",
+      "taskName": "Meet our Team",
+      "timestamp": "2025-03-28T05:37:34.839Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "348075",
+      "estimation": 1,
+      "projectName": "Global Telecom Testing [SEO]",
+      "taskName": "sticky CTA",
+      "timestamp": "2025-03-28T05:38:59.400Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349901",
+      "estimation": 1,
+      "projectName": "Arrowhead Manor [SEO]",
+      "taskName": "Website Photo",
+      "timestamp": "2025-03-28T05:41:23.739Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349932",
+      "estimation": 0.5,
+      "projectName": "Douglas P. Earl [Holistic]",
+      "taskName": "add/replace logo",
+      "timestamp": "2025-03-28T05:44:16.108Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350457",
+      "estimation": 0.5,
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "Standardize Address Formatting on Contact Page ( Dev Site)",
+      "timestamp": "2025-03-28T05:45:42.286Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351184",
+      "estimation": 0.5,
+      "projectName": "Coastal Capital Lending [SEO]",
+      "taskName": "Webpage Implementation",
+      "timestamp": "2025-03-28T05:49:33.494Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351416",
+      "estimation": 1,
+      "projectName": "Solar Energy Solutions of America NEW [SEO]",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-28T05:53:48.919Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351417",
+      "estimation": 1,
+      "projectName": "AC-EZ [SEO]",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-28T05:56:13.738Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351518",
+      "estimation": 1,
+      "projectName": "Value Capital Funding",
+      "taskName": "Recaptcha on all website forms",
+      "timestamp": "2025-03-28T06:00:07.447Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "334156",
+      "estimation": 1,
+      "projectName": "Hartman Executive Advisors [SEO]",
+      "taskName": "Integrating AI into Professional Services: Enhancing Outcomes for Clients and Staff",
+      "timestamp": "2025-03-31T04:43:22.297Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "334155",
+      "estimation": 1,
+      "projectName": "Hartman Executive Advisors [SEO]",
+      "taskName": "The Struggle to Hire and Retain a CIO: Why Companies Are Turning to Outsourced CIO Services",
+      "timestamp": "2025-03-31T04:44:32.779Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "334154",
+      "estimation": 1,
+      "projectName": "Hartman Executive Advisors [SEO]",
+      "taskName": "The Key to Success in 2025 is an Effective IT Strategy",
+      "timestamp": "2025-03-31T04:46:27.971Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350121",
+      "estimation": 0.75,
+      "projectName": "Spa Reveil [ SEO ]",
+      "taskName": "Private Party Page Changes",
+      "timestamp": "2025-03-31T04:54:56.058Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "328880",
+      "estimation": 2,
+      "projectName": "Coastal Capital Lending [SEO]",
+      "taskName": "Titles, H1s &amp;amp; Meta Descriptions",
+      "timestamp": "2025-03-31T04:54:58.704Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351761",
+      "estimation": 2,
+      "projectName": "Impulse Enterprises [SEO]",
+      "taskName": "update plugins",
+      "timestamp": "2025-03-31T04:56:59.724Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "151094",
+      "estimation": 0.5,
+      "projectName": "Nevada Trust Company [SEO]",
+      "taskName": "Content Implementation ($Month)",
+      "timestamp": "2025-03-31T04:56:59.958Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "345761",
+      "estimation": 1,
+      "projectName": "CDC Detailing",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T04:58:34.837Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "307121",
+      "estimation": 2,
+      "projectName": "Value Capital Funding",
+      "taskName": "Plugin Update",
+      "timestamp": "2025-03-31T04:59:25.154Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "343432",
+      "estimation": 1,
+      "projectName": "Function + Form",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T04:59:36.489Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "307522",
+      "estimation": 0.5,
+      "projectName": "Tate Accident Law [SEO]",
+      "taskName": "Content Implementation ($Month)",
+      "timestamp": "2025-03-31T05:00:48.617Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "337513",
+      "estimation": 1,
+      "projectName": "Rinse Prince [SEO]",
+      "taskName": "Redirects Setup",
+      "timestamp": "2025-03-31T05:01:04.476Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "270165",
+      "estimation": 2,
+      "projectName": "Covenant Landscapes [SEO]",
+      "taskName": "Malware Cleaning *O*",
+      "timestamp": "2025-03-31T05:04:57.881Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "344749",
+      "estimation": 1,
+      "projectName": "Jonathan&amp;#039;s Travels [Website: WP]",
+      "taskName": "Dev Site Edit",
+      "timestamp": "2025-03-31T05:11:34.001Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "346994",
+      "estimation": 2,
+      "projectName": "MedConnect USA [SEO]",
+      "taskName": "Backlink Health Check",
+      "timestamp": "2025-03-31T05:14:04.213Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "342194",
+      "estimation": 1,
+      "projectName": "Ohana Surf Project [WP]",
+      "taskName": "Reducing Duration of Videos to Increase Load Time? ",
+      "timestamp": "2025-03-31T05:16:06.278Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "347041",
+      "estimation": 1,
+      "projectName": "Tile Mart [SEO]",
+      "taskName": "Form Testing &amp;amp; SMTP",
+      "timestamp": "2025-03-31T05:17:49.347Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "345899",
+      "estimation": 0.5,
+      "projectName": "Next Level MHC",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-03-31T05:20:08.646Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "348719",
+      "estimation": 1,
+      "projectName": "Hit + Run [Website WP]",
+      "taskName": "case studies changes on new website",
+      "timestamp": "2025-03-31T05:21:13.150Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "341115",
+      "estimation": 1.5,
+      "projectName": "Discovery Senior Living - Morada Locations",
+      "taskName": "Update Amenities Page ",
+      "timestamp": "2025-03-31T05:22:19.019Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349670",
+      "estimation": 2,
+      "projectName": "Supreme Buildings",
+      "taskName": "New Products",
+      "timestamp": "2025-03-31T05:23:00.160Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351432",
+      "estimation": 0.1,
+      "projectName": "Rinse Prince [SEO]",
+      "taskName": "Redirects Setup - Live Site *R*",
+      "timestamp": "2025-03-31T05:25:16.696Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351432",
+      "estimation": 0.15,
+      "projectName": "Rinse Prince [SEO]",
+      "taskName": "Redirects Setup - Live Site *R*",
+      "timestamp": "2025-03-31T05:25:22.811Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "332466",
+      "estimation": 1,
+      "projectName": "Rylee Home Services [SEO]",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T05:29:04.784Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351416",
+      "estimation": 1,
+      "projectName": "Solar Energy Solutions of America NEW [SEO]",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-31T05:36:38.810Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351417",
+      "estimation": 0.75,
+      "projectName": "AC-EZ [SEO]",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-31T05:37:48.821Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351418",
+      "estimation": 0.75,
+      "projectName": "RoofEZ [SEO] ",
+      "taskName": "install accessiBe on the website ",
+      "timestamp": "2025-03-31T05:38:28.171Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351487",
+      "estimation": 0.25,
+      "projectName": "Eveready Express [PPC]",
+      "taskName": "SMTP",
+      "timestamp": "2025-03-31T05:41:27.273Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350457",
+      "estimation": 0.5,
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "Standardize Address Formatting on Contact Page ( Dev Site)",
+      "timestamp": "2025-03-31T05:41:37.461Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350454",
+      "estimation": 1,
+      "projectName": "Hair Oh Yeah [SEO]",
+      "taskName": "Create a page for &amp;quot;Expanding Our Reach&amp;quot;",
+      "timestamp": "2025-03-31T05:45:31.527Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350449",
+      "estimation": 1,
+      "projectName": "Friendly Global",
+      "taskName": "Women&amp;#039;s Travel Guide Update",
+      "timestamp": "2025-03-31T05:46:41.088Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350457",
+      "estimation": 0.5,
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "Standardize Address Formatting on Contact Page ( Dev Site)",
+      "timestamp": "2025-03-31T05:48:10.371Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350454",
+      "estimation": 1,
+      "projectName": "Hair Oh Yeah [SEO]",
+      "taskName": "Create a page for &amp;quot;Expanding Our Reach&amp;quot;",
+      "timestamp": "2025-03-31T05:48:20.566Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "351753",
+      "estimation": 0.5,
+      "projectName": "Certainty Painting [SEO]",
+      "taskName": "Contact page fixes",
+      "timestamp": "2025-03-31T05:48:35.743Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "255734",
+      "estimation": 0.5,
+      "projectName": "Harveys Five Star Roofing [SEO]",
+      "taskName": "Content Implementation ($Month)",
+      "timestamp": "2025-03-31T05:54:40.956Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349551",
+      "estimation": 5,
+      "projectName": "MightyRep [SEO]",
+      "taskName": "Checking redirects after client migrated site",
+      "timestamp": "2025-03-31T06:23:52.129Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349551",
+      "estimation": 1.5,
+      "projectName": "MightyRep [SEO]",
+      "taskName": "Checking redirects after client migrated site",
+      "timestamp": "2025-03-31T06:24:57.831Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "219452",
+      "estimation": 0.5,
+      "projectName": "NCCDP/NATIONAL COUNCIL OF CERTIFIED DEMENTIA PRACT [SEO]",
+      "taskName": "Website Audit Fixes",
+      "timestamp": "2025-03-31T06:33:39.748Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "312709",
+      "estimation": 6,
+      "projectName": "Safety First [Website WP]",
+      "taskName": "website changes",
+      "timestamp": "2025-03-31T06:34:31.476Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "318168",
+      "estimation": 1,
+      "projectName": "ProCalcs",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T06:34:59.942Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "317495",
+      "estimation": 1,
+      "projectName": "Strategic Business Brokers Group",
+      "taskName": "Titles, H1s &amp;amp; Meta Descriptions",
+      "timestamp": "2025-03-31T06:35:47.341Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "334098",
+      "estimation": 1,
+      "projectName": "Certainty Painting [SEO]",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T06:36:41.104Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "319864",
+      "estimation": 2,
+      "projectName": "Restaurant Patio Furniture",
+      "taskName": "Mobile Speed Optimization *O*",
+      "timestamp": "2025-03-31T06:37:11.573Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "345595",
+      "estimation": 1,
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "NYC Location Page",
+      "timestamp": "2025-03-31T06:41:54.396Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349620",
+      "estimation": 1,
+      "projectName": "B2B Moving Company",
+      "taskName": "Moving Hosting to T35",
+      "timestamp": "2025-03-31T07:16:05.370Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350895",
+      "estimation": 1,
+      "projectName": "Impulse Enterprises [SEO]",
+      "taskName": "YITH WooCommerce Ajax Product Filter",
+      "timestamp": "2025-03-31T07:17:03.549Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "342551",
+      "estimation": 1.5,
+      "projectName": "Laser and Skin Surgery Center [SEO]",
+      "taskName": "Backlink Health Check",
+      "timestamp": "2025-03-31T07:29:04.167Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "313550",
+      "estimation": 1.5,
+      "projectName": "Amish Wholesale Gazebos [SEO]",
+      "taskName": "Titles, H1s &amp;amp; Meta Descriptions",
+      "timestamp": "2025-03-31T07:35:57.068Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349549",
+      "estimation": 2,
+      "projectName": "MD Mold Testing [SEO]",
+      "taskName": "PageSpeed Fixes",
+      "timestamp": "2025-03-31T07:36:49.838Z",
+      "updatedBy": "admin"
+    }
   ]
 }

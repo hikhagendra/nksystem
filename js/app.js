@@ -1500,3 +1500,113 @@ async function clearCompletedTasks() {
         alert('Error clearing completed tasks: ' + error.message);
     }
 }
+
+let grid = document.getElementById('admin-tasks');
+let tHead = grid.querySelector('thead');
+let tBody = grid.querySelector('tbody');
+
+tHead.addEventListener('click', function(event) {
+    // let sortType = event.target.dataset.type;
+    // let headings = event.target.closest('tr').getElementsByTagName('th');
+    // let colNumber = 0;
+
+    // for(let i = 0; i < headings.length; i++) {
+    //     if(headings[i] == event.target) {
+    //         colNumber = i;
+    //         break;
+    //     }
+    // }
+    
+    new GridShort(tBody, 'string', 3);
+});
+
+class GridShort {
+    constructor(grid, type, colNum) {
+        this.rows = this.toArray(grid);
+        this[type + 'Sort'](colNum);
+    }
+
+    // numberSort(colNum) {
+    //     // Sort the number column data
+    //     this.rows.sort(function(a, b) {
+    //         return a.children[colNum].firstChild.data - b.children[colNum].firstChild.data;
+    //     });
+        
+    //     // Clean the table
+    //     tBody.innerHTML = '';
+
+    //     // Append the sorted rows
+    //     this.rows.forEach(row => tBody.append(row));
+    // }
+
+    stringSort(colNum) {
+        // Sort the string column data
+        this.rows.sort(function(a, b) {
+            if(a.children[colNum].firstElementChild.value > b.children[colNum].firstElementChild.value) {
+                return 1;
+            }
+            
+            if(a.children[colNum].firstElementChild.value == b.children[colNum].firstElementChild.value) {
+                return 0;
+            }
+            
+            if(a.children[colNum].firstElementChild.value < b.children[colNum].firstElementChild.value) {
+                return -1;
+            }
+        });
+
+        // console.log(this.rows[1].children[3].firstElementChild.value);
+        
+        // Clean the table
+        tBody.innerHTML = '';
+
+        // Append the sorted rows
+        this.rows.forEach(row => tBody.append(row));
+    }
+
+    toArray(data) {
+        let nodeCollection = data.getElementsByTagName('tr');
+        let arrData = [];
+
+        for(let node of nodeCollection) {
+            arrData.push(node);
+        }
+
+        return arrData;
+    }
+}
+
+function filterTasks() {
+    const searchInput = document.getElementById("taskSearch").value.toLowerCase();
+    const table = document.getElementById("admin-tasks");
+    const rows = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
+        const cells = rows[i].getElementsByTagName("td");
+        let rowContainsSearchText = false;
+
+        for (let j = 0; j < cells.length; j++) {
+            const cell = cells[j];
+            let cellText = "";
+
+            // Check if the cell contains a <select> dropdown
+            const selectElement = cell.querySelector("select");
+            if (selectElement) {
+                // Get the selected option's text
+                cellText = selectElement.options[selectElement.selectedIndex].text.toLowerCase();
+            } else {
+                // Otherwise, use the cell's inner text
+                cellText = cell.innerText.toLowerCase();
+            }
+
+            // Check if the cell text includes the search input
+            if (cellText.includes(searchInput)) {
+                rowContainsSearchText = true;
+                break;
+            }
+        }
+
+        // Show or hide the row based on the search result
+        rows[i].style.display = rowContainsSearchText ? "" : "none";
+    }
+}
