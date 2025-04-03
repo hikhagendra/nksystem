@@ -551,6 +551,286 @@
       "taskName": "Urgent Client Issue",
       "timestamp": "2025-04-01T07:33:28.263Z",
       "updatedBy": "admin"
+    },
+    {
+      "taskId": "353812",
+      "notes": "Do malware scan, Not sure what bug client is referring to",
+      "projectName": "Construction Attachments, Inc. [SEO]",
+      "taskName": "Bug On Site",
+      "timestamp": "2025-04-02T03:56:46.516Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "352500",
+      "notes": "Prority",
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "Sophia Care Coordination Team",
+      "timestamp": "2025-04-02T04:01:55.296Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353839",
+      "notes": "Priority",
+      "projectName": "Compeo [SEO]",
+      "taskName": "updating a page&amp;#039;s H1",
+      "timestamp": "2025-04-02T04:02:21.497Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350848",
+      "notes": "Prority",
+      "projectName": "Campau Kitchen and Bath [SEO]",
+      "taskName": "Dev Edits 03 Client Feedback",
+      "timestamp": "2025-04-02T04:02:49.658Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "352017",
+      "notes": "HP",
+      "projectName": "Lane Law Firm [SEO]",
+      "taskName": "Site Migration",
+      "timestamp": "2025-04-02T04:06:14.576Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "352498",
+      "notes": "24 Hr prority",
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "Chatham Update",
+      "timestamp": "2025-04-02T04:07:00.136Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350429",
+      "notes": "Check if license are domian specific, And tell them, we will point the domain once we have license for the required plugins so that when we point out the doiman and site goes live no issues occurs",
+      "projectName": "All County Window Cleaning ",
+      "taskName": "Transfer Hosting ",
+      "timestamp": "2025-04-02T04:08:13.326Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353779",
+      "notes": "Scan all the site forms.",
+      "projectName": "Global Gold And Silver [PPC]",
+      "taskName": "Add ReCaptcha to the contact forms",
+      "timestamp": "2025-04-02T04:19:36.202Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353838",
+      "notes": "Check if there is any accordion available on the other pages. Else you will need to query accordingly.",
+      "projectName": "PTCNJ [SEO Setup]",
+      "taskName": "Add Accordion Style FAQ",
+      "timestamp": "2025-04-02T04:23:48.057Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "180553",
+      "notes": "If optimization can be done, let do, do not add app for now",
+      "projectName": "Amenities Depot Inc [ SEO ]",
+      "taskName": "Website Audit Fixes",
+      "timestamp": "2025-04-02T04:25:09.791Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353797",
+      "notes": "First find out where it was being planned to place. Read other tasks.",
+      "projectName": "NPTI of Florida [SEO]",
+      "taskName": "Trust Pilot Integration",
+      "timestamp": "2025-04-02T04:26:32.615Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "255734",
+      "notes": "Check if indexed, keep the task on us, for the gap of 4 days to review for the indexing",
+      "projectName": "Harveys Five Star Roofing [SEO]",
+      "taskName": "Content Implementation ($Month)",
+      "timestamp": "2025-04-02T04:27:09.462Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353815",
+      "notes": "They should be aligned in a single row. Write in details what was causing it in details for client.",
+      "projectName": "FineLine Technologies [SEO]",
+      "taskName": "Retail Page",
+      "timestamp": "2025-04-02T04:32:47.803Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "314389",
+      "notes": "Thats okay we will work on client dev site but will be limited to the work which can be done from CMS backend",
+      "projectName": "GoldMark Creative[SEO]",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-04-02T04:33:41.636Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350049",
+      "notes": "Answer the question and tell the PM to reply on his checklist as well.",
+      "projectName": "BB2 Technology Group [SEO]",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-04-02T04:36:04.424Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "343452",
+      "notes": "Confirm the access and tell PM to reply on his checklist based on task description.",
+      "projectName": "Function + Form",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-04-02T04:37:33.610Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "325163",
+      "notes": "Need to crawl site to find Maryland",
+      "projectName": "Peak Visuals",
+      "taskName": "Titles, H1s &amp;amp; Meta Descriptions",
+      "timestamp": "2025-04-02T04:38:21.307Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350043",
+      "notes": "Same as config",
+      "projectName": "BB2 Technology Group [SEO]",
+      "taskName": "Site Backup",
+      "timestamp": "2025-04-02T04:42:36.306Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "342274",
+      "notes": "Reach out to Mani Sir,",
+      "projectName": "Reimagine Roofing [SEO]",
+      "taskName": "Configure Development Environment",
+      "timestamp": "2025-04-02T04:42:54.606Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "340615",
+      "notes": "Check access and adjust estimation accordingly.",
+      "projectName": "Hogue Landscaping [SEO]",
+      "taskName": "Site Backup",
+      "timestamp": "2025-04-02T04:44:01.004Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "338396",
+      "notes": "Check for dynamic feasibility and then ask for confirmation for which content should we implement out of 4 items.",
+      "projectName": "Myst Yacht Charters",
+      "taskName": "Titles, H1s &amp;amp; Meta Descriptions",
+      "timestamp": "2025-04-02T04:49:43.077Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "320709",
+      "notes": "First check if we can make anything dynamic.",
+      "projectName": "David S Brown Enterprises [SEO]",
+      "taskName": "Titles, H1s &amp;amp; Meta Descriptions",
+      "timestamp": "2025-04-02T04:51:58.234Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "345595",
+      "notes": "We might be able to adjust heigh and width of the iframe that will be embedded",
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "NYC Location Page",
+      "timestamp": "2025-04-02T04:52:01.261Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "345595",
+      "notes": "We might be able to adjust height and width of the iframe that will be embedded",
+      "projectName": "Lukin Psychotherapy [SEO Setup]",
+      "taskName": "NYC Location Page",
+      "timestamp": "2025-04-02T04:52:05.889Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "340402",
+      "notes": "Reachout to Rajan dai regarding the layout template",
+      "projectName": "Junk Cleaning Pros [PPC]",
+      "taskName": "Access for Landing Page",
+      "timestamp": "2025-04-02T05:02:15.088Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "349932",
+      "notes": "Priority",
+      "projectName": "Douglas P. Earl [Holistic]",
+      "taskName": "add/replace logo",
+      "timestamp": "2025-04-02T05:13:28.638Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353786",
+      "notes": "Coordinate with Sameep and Sudhan",
+      "projectName": "White Dove Windows [Website: WordPress]",
+      "taskName": "Dev Site Edits",
+      "timestamp": "2025-04-02T05:21:24.584Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353771",
+      "notes": "Check if the new design is already available in the site, else say to PM that default blog layout is like this and new layout might need coding.",
+      "projectName": "Jonathan&amp;#039;s Travels [Website: WP]",
+      "taskName": "Blog Page Implementation ",
+      "timestamp": "2025-04-02T05:33:15.360Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353770",
+      "notes": "Debugging might take extra time, so you can adjust estimation accordingly.",
+      "projectName": "Floor Zone LLC [SEO]",
+      "taskName": "resolve admin-ajax not responding",
+      "timestamp": "2025-04-02T05:34:40.250Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "332346",
+      "notes": "Check if dynamic is possible and confirm with PM which contents should we implement out of 4.",
+      "projectName": "Bergen Law",
+      "taskName": "Titles, H1s &amp;amp; Meta Descriptions",
+      "timestamp": "2025-04-02T05:37:04.609Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "350889",
+      "notes": "update content",
+      "projectName": "Knott Properties [Website: WordPress]",
+      "taskName": "Edits",
+      "timestamp": "2025-04-02T05:37:45.427Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353805",
+      "notes": "Wordfence gives option to setup 2FA.",
+      "projectName": "Ousia Labs [SEO]",
+      "taskName": "2FA Authentication",
+      "timestamp": "2025-04-02T05:45:37.454Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "353788",
+      "notes": "Coordinate with Saru",
+      "projectName": "Honey Do Men [SEO Setup]",
+      "taskName": "Homepage Content Update",
+      "timestamp": "2025-04-02T05:47:33.956Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "352480",
+      "notes": "Please reachout to Sujan Kandel incase of issue",
+      "projectName": "Neighbourhood Heroes [SEO]",
+      "taskName": "SEO Fixes",
+      "timestamp": "2025-04-02T05:48:11.968Z",
+      "updatedBy": "admin"
+    },
+    {
+      "taskId": "352484",
+      "notes": "Set alarms for 5 minutes earlier.",
+      "projectName": "Aesthetics Nutrition [Maintenance]",
+      "taskName": "Spring Flash Sale- Development ",
+      "timestamp": "2025-04-02T08:46:40.665Z",
+      "updatedBy": "admin"
     }
   ]
 }
