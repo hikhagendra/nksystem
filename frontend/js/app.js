@@ -1352,19 +1352,21 @@ function calculateTeamStats(tasks, teamMembers) {
 // Function to calculate today's tracked hours for the current user
 async function updateTodayTrackedHours() {
     try {
-        const response = await fetch(`${backendUrl}/backend/db/trackedData.json`);
+        const response = await fetch(`${backendUrl}/db/trackedData.json`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const trackedData = await response.json();
-        
+
         // Get today's date in the format "YYYY-MM-DD"
         const today = new Date().toISOString().split('T')[0];
-        
+
         // Get current user's name from localStorage
         const currentUser = localStorage.getItem('userName');
-        
+
         // Filter entries for today and current user
-        const todaysEntries = trackedData.entries.filter(entry => 
-            entry.date === today && 
-            entry.person === currentUser
+        const todaysEntries = trackedData.entries.filter(entry =>
+            entry.date === today && entry.person === currentUser
         );
 
         // Sum up all tracked time for today's entries
@@ -1372,23 +1374,29 @@ async function updateTodayTrackedHours() {
             return total + (parseFloat(entry.trackedTime) || 0);
         }, 0);
 
-        // Round to 2 decimal places and add "hrs"
-        const roundedTotal = Math.round(totalTrackedHours * 100) / 100;
-        
         // Update the display with proper formatting
         const totalTrackedElement = document.getElementById('total-tracked');
-        totalTrackedElement.textContent = `${roundedTotal.toFixed(2)} hrs`;
+        if (totalTrackedElement) {
+            totalTrackedElement.textContent = `${totalTrackedHours.toFixed(2)} hrs`;
 
-        // Optional: Add some color coding based on hours tracked
-        if (roundedTotal > 0) {
-            totalTrackedElement.classList.add('text-green-600');
-        } else {
-            totalTrackedElement.classList.add('text-gray-600');
+            // Optional: Add some color coding based on hours tracked
+            if (totalTrackedHours > 0) {
+                totalTrackedElement.classList.add('text-green-600');
+                totalTrackedElement.classList.remove('text-gray-600');
+            } else {
+                totalTrackedElement.classList.add('text-gray-600');
+                totalTrackedElement.classList.remove('text-green-600');
+            }
         }
-
     } catch (error) {
         console.error('Error calculating today\'s tracked hours:', error);
-        document.getElementById('total-tracked').textContent = '0.00 hrs';
+
+        // Handle missing or invalid data gracefully
+        const totalTrackedElement = document.getElementById('total-tracked');
+        if (totalTrackedElement) {
+            totalTrackedElement.textContent = '0.00 hrs';
+            totalTrackedElement.classList.add('text-gray-600');
+        }
     }
 }
 

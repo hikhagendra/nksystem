@@ -537,6 +537,16 @@ app.post('/clear-completed-tasks', (req, res) => {
     }
 });
 
+// Serve trackedData.json
+app.get('/db/trackedData.json', (req, res) => {
+    const filePath = path.join(__dirname, 'db', 'trackedData.json');
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ success: false, message: 'Tracked data not found' });
+    }
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    res.json(data);
+});
+
 // Handle 404 errors
 app.get('*', (req, res) => {
     res.status(404).send('404 Not Found');
