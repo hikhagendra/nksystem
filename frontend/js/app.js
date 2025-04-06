@@ -436,7 +436,7 @@ function displayTaskRows(tasks, teamMembers, userRole) {
     }
 
     // Fetch tracked data
-    fetch(`${backendUrl}/backend/db/trackedData.json`)
+    fetch(`${backendUrl}/db/trackedData.json`)
     .then(response => response.json())
         .then(trackedData => {
             // Calculate today's total tracked hours for the summary card
@@ -1337,7 +1337,7 @@ function calculateTeamStats(tasks, teamMembers) {
 // Function to calculate today's tracked hours for the current user
 async function updateTodayTrackedHours() {
     try {
-        const response = await fetch(`${backendUrl}/backend/db/trackedData.json`);
+        const response = await fetch(`${backendUrl}/db/trackedData.json`);
         const trackedData = await response.json();
         
         // Get today's date in the format "YYYY-MM-DD"
