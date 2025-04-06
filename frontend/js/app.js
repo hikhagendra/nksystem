@@ -64,39 +64,41 @@ window.onload = function() {
 };
 
 // Handle login form submission
-document.getElementById("login-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
+const loginForm = document.getElementById("login-form");
+if (loginForm) {
+    loginForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+        try {
+            const response = await fetch(`${backendUrl}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
 
-    try {
-        const response = await fetch(`${backendUrl}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-        });
+            const data = await response.json();
+            if (data.success) {
+                localStorage.setItem("loggedIn", true);
+                localStorage.setItem("userRole", data.role);
+                localStorage.setItem("userName", data.pegasusName);
 
-        const data = await response.json();
-        if (data.success) {
-            localStorage.setItem("loggedIn", true);
-            localStorage.setItem("userRole", data.role);
-            localStorage.setItem("userName", data.pegasusName);
-
-            // Redirect based on role
-            if (data.role === "admin") {
-                window.location.href = "dashboard-admin.html";
+                // Redirect based on role
+                if (data.role === "admin") {
+                    window.location.href = "dashboard-admin.html";
+                } else {
+                    window.location.href = "dashboard-user.html";
+                }
             } else {
-                window.location.href = "dashboard-user.html";
+                alert(data.message);
             }
-        } else {
-            alert(data.message);
+        } catch (error) {
+            console.error("Error logging in:", error);
+            alert("An error occurred. Please try again.");
         }
-    } catch (error) {
-        console.error("Error logging in:", error);
-        alert("An error occurred. Please try again.");
-    }
-});
+    });
+}
 
 // Handle Add Member form submission
 document.getElementById("add-member-form")?.addEventListener("submit", async function(event) {
@@ -436,175 +438,186 @@ function displayTaskRows(tasks, teamMembers, userRole) {
     }
 
     // Fetch tracked data
-    fetch(`${backendUrl}/backend/db/trackedData.json`)
-    .then(response => response.json())
-        .then(trackedData => {
-            // Calculate today's total tracked hours for the summary card
-            const today = new Date().toISOString().split('T')[0];
-            const todaysTrackedHours = trackedData.entries
-                .filter(entry => entry.date === today && entry.person === currentUser)
+    fetch(`${backendUrl}/db/trackedData.json`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(trackedData => {
+        // Calculate today's total tracked hours for the summary card
+        const today = new Date().toISOString().split('T')[0];
+        const todaysTrackedHours = trackedData.entries
+            .filter(entry => entry.date === today && entry.person === currentUser)
+            .reduce((total, entry) => total + (parseFloat(entry.trackedTime) || 0), 0);
+
+        // Update total tracked hours display
+        const totalTrackedElement = document.getElementById('total-tracked');
+        if (totalTrackedElement) {
+            totalTrackedElement.textContent = `${todaysTrackedHours.toFixed(2)} hrs`;
+            totalTrackedElement.classList.toggle('text-green-600', todaysTrackedHours > 0);
+            totalTrackedElement.classList.toggle('text-gray-600', todaysTrackedHours === 0);
+        }
+
+        // Create task rows with tracked data
+        tasks.forEach((task, index) => {
+            const row = document.createElement("tr");
+            row.classList.add("hover:bg-gray-50");
+            const taskId = String(task.id || task._id);
+            row.dataset.taskId = taskId;
+
+            // Calculate total tracked hours for this specific task
+            const taskTrackedHours = trackedData.entries
+                .filter(entry => String(entry.taskId) === taskId)
                 .reduce((total, entry) => total + (parseFloat(entry.trackedTime) || 0), 0);
 
-            // Update total tracked hours display
-            const totalTrackedElement = document.getElementById('total-tracked');
-            if (totalTrackedElement) {
-                totalTrackedElement.textContent = `${todaysTrackedHours.toFixed(2)} hrs`;
-                totalTrackedElement.classList.toggle('text-green-600', todaysTrackedHours > 0);
-                totalTrackedElement.classList.toggle('text-gray-600', todaysTrackedHours === 0);
+            const assignedTo = task.user?.pegasusName || '';
+            const estimatedHours = parseFloat(task.estimation) || 0;
+            const progressPercentage = Math.min((taskTrackedHours / estimatedHours) * 100, 100) || 0;
+            
+            // Determine progress bar color based on tracked vs estimated hours
+            const progressBarColor = taskTrackedHours > estimatedHours ? 'bg-red-500' : 'bg-green-500';
+
+            // Common row content for both admin and user
+            let rowContent = `
+                <td class="p-2 border text-center w-12">${index + 1}</td>
+                <td class="p-2 border w-96">${decodeHtmlEntities(task.projectName)}</td>
+                <td class="p-2 border w-48">${decodeHtmlEntities(task.taskName)}</td>`;
+
+            // Admin-specific content
+            if (userRole === 'admin') {
+                rowContent += `
+                    <td class="p-2 border w-40">
+                        <select class="w-full bg-transparent assignee-select" onchange="updateTaskField(this, 'assignedTo')">
+                            <option value="">Unassigned</option>
+                            ${teamMembers.map(member => 
+                                `<option value="${member.pegasusName}" ${member.pegasusName === assignedTo ? 'selected' : ''}>
+                                    ${member.pegasusName}
+                                </option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td class="p-2 border w-24 estimation-cell" 
+                        ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'estimation')"
+                        data-estimation="${estimatedHours}">
+                        <div class="text-xs space-y-1">
+                            <div class="flex justify-between text-[10px] font-medium">
+                                <span>Estimated</span>
+                                <span class="estimation-value">${estimatedHours}hrs</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] font-medium">
+                                <span>Tracked</span>
+                                <span>${taskTrackedHours.toFixed(2)}hrs</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="${progressBarColor} h-1.5 rounded-full" 
+                                     style="width: ${progressPercentage}%"
+                                     title="${taskTrackedHours.toFixed(2)}hrs / ${estimatedHours}hrs"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-2 border w-[21.6rem] notes-cell text-left" 
+                        ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'notes')">
+                        <div class="whitespace-pre-wrap">${task.notes || '-'}</div>
+                    </td>
+                    <td class="p-2 border text-center w-12">
+                        <a href="${task.link}" 
+                           class="inline-block text-blue-500 hover:text-blue-700" 
+                           target="_blank" 
+                           title="Open task">
+                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                 class="h-5 w-5" 
+                                 fill="none" 
+                                 viewBox="0 0 24 24" 
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" 
+                                      stroke-linejoin="round" 
+                                      stroke-width="2" 
+                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </td>`;
+            } else {
+                // User-specific content
+                rowContent += `
+                    <td class="p-2 border w-24">
+                        <div class="text-xs space-y-1">
+                            <div class="flex justify-between text-[10px] font-medium">
+                                <span>Estimated</span>
+                                <span>${estimatedHours}hrs</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] font-medium">
+                                <span>Tracked</span>
+                                <span>${taskTrackedHours.toFixed(2)}hrs</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="${progressBarColor} h-1.5 rounded-full" 
+                                     style="width: ${progressPercentage}%"
+                                     title="${taskTrackedHours.toFixed(2)}hrs / ${estimatedHours}hrs"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-2 border w-[21.6rem] text-left">
+                        <div class="whitespace-pre-wrap">${task.notes || '-'}</div>
+                    </td>
+                    <td class="p-2 border text-center w-12">
+                        <a href="${task.link}" 
+                           class="inline-block text-blue-500 hover:text-blue-700" 
+                           target="_blank" 
+                           title="Open task">
+                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                 class="h-5 w-5" 
+                                 fill="none" 
+                                 viewBox="0 0 24 24" 
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" 
+                                      stroke-linejoin="round" 
+                                      stroke-width="2" 
+                                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </td>`;
             }
 
-            // Create task rows with tracked data
-            tasks.forEach((task, index) => {
-                const row = document.createElement("tr");
-                row.classList.add("hover:bg-gray-50");
-                const taskId = String(task.id || task._id);
-                row.dataset.taskId = taskId;
+            // Update the checkbox HTML with more explicit checking and debugging
+            const isCompleted = task.completed === true;
+            console.log(`Task ${task.id} completion status:`, isCompleted);
 
-                // Calculate total tracked hours for this specific task
-                const taskTrackedHours = trackedData.entries
-                    .filter(entry => String(entry.taskId) === taskId)
-                    .reduce((total, entry) => total + (parseFloat(entry.trackedTime) || 0), 0);
+            rowContent += `
+                <td class="p-2 border text-center w-20">
+                    <input type="checkbox" 
+                           class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                           ${isCompleted ? 'checked' : ''}
+                           onchange="updateTaskCompletion(this, '${taskId}')"
+                           data-task-name="${task.taskName}"
+                           title="Mark task as completed">
+                </td>`;
 
-                const assignedTo = task.user?.pegasusName || '';
-                const estimatedHours = parseFloat(task.estimation) || 0;
-                const progressPercentage = Math.min((taskTrackedHours / estimatedHours) * 100, 100) || 0;
-                
-                // Determine progress bar color based on tracked vs estimated hours
-                const progressBarColor = taskTrackedHours > estimatedHours ? 'bg-red-500' : 'bg-green-500';
-
-                // Common row content for both admin and user
-                let rowContent = `
-                    <td class="p-2 border text-center w-12">${index + 1}</td>
-                    <td class="p-2 border w-96">${decodeHtmlEntities(task.projectName)}</td>
-                    <td class="p-2 border w-48">${decodeHtmlEntities(task.taskName)}</td>`;
-
-                // Admin-specific content
-                if (userRole === 'admin') {
-                    rowContent += `
-                        <td class="p-2 border w-40">
-                            <select class="w-full bg-transparent assignee-select" onchange="updateTaskField(this, 'assignedTo')">
-                                <option value="">Unassigned</option>
-                                ${teamMembers.map(member => 
-                                    `<option value="${member.pegasusName}" ${member.pegasusName === assignedTo ? 'selected' : ''}>
-                                        ${member.pegasusName}
-                                    </option>`
-                                ).join('')}
-                            </select>
-                        </td>
-                        <td class="p-2 border w-24 estimation-cell" 
-                            ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'estimation')"
-                            data-estimation="${estimatedHours}">
-                            <div class="text-xs space-y-1">
-                                <div class="flex justify-between text-[10px] font-medium">
-                                    <span>Estimated</span>
-                                    <span class="estimation-value">${estimatedHours}hrs</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
-                                </div>
-                                <div class="flex justify-between text-[10px] font-medium">
-                                    <span>Tracked</span>
-                                    <span>${taskTrackedHours.toFixed(2)}hrs</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                    <div class="${progressBarColor} h-1.5 rounded-full" 
-                                         style="width: ${progressPercentage}%"
-                                         title="${taskTrackedHours.toFixed(2)}hrs / ${estimatedHours}hrs"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="p-2 border w-[21.6rem] notes-cell text-left" 
-                            ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'notes')">
-                            <div class="whitespace-pre-wrap">${task.notes || '-'}</div>
-                        </td>
-                        <td class="p-2 border text-center w-12">
-                            <a href="${task.link}" 
-                               class="inline-block text-blue-500 hover:text-blue-700" 
-                               target="_blank" 
-                               title="Open task">
-                                <svg xmlns="http://www.w3.org/2000/svg" 
-                                     class="h-5 w-5" 
-                                     fill="none" 
-                                     viewBox="0 0 24 24" 
-                                     stroke="currentColor">
-                                    <path stroke-linecap="round" 
-                                          stroke-linejoin="round" 
-                                          stroke-width="2" 
-                                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                            </a>
-                        </td>`;
-                } else {
-                    // User-specific content
-                    rowContent += `
-                        <td class="p-2 border w-24">
-                            <div class="text-xs space-y-1">
-                                <div class="flex justify-between text-[10px] font-medium">
-                                    <span>Estimated</span>
-                                    <span>${estimatedHours}hrs</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                    <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
-                                </div>
-                                <div class="flex justify-between text-[10px] font-medium">
-                                    <span>Tracked</span>
-                                    <span>${taskTrackedHours.toFixed(2)}hrs</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                    <div class="${progressBarColor} h-1.5 rounded-full" 
-                                         style="width: ${progressPercentage}%"
-                                         title="${taskTrackedHours.toFixed(2)}hrs / ${estimatedHours}hrs"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="p-2 border w-[21.6rem] text-left">
-                            <div class="whitespace-pre-wrap">${task.notes || '-'}</div>
-                        </td>
-                        <td class="p-2 border text-center w-12">
-                            <a href="${task.link}" 
-                               class="inline-block text-blue-500 hover:text-blue-700" 
-                               target="_blank" 
-                               title="Open task">
-                                <svg xmlns="http://www.w3.org/2000/svg" 
-                                     class="h-5 w-5" 
-                                     fill="none" 
-                                     viewBox="0 0 24 24" 
-                                     stroke="currentColor">
-                                    <path stroke-linecap="round" 
-                                          stroke-linejoin="round" 
-                                          stroke-width="2" 
-                                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                            </a>
-                        </td>`;
-                }
-
-                // Update the checkbox HTML with more explicit checking and debugging
-                const isCompleted = task.completed === true;
-                console.log(`Task ${task.id} completion status:`, isCompleted);
-
-                rowContent += `
-                    <td class="p-2 border text-center w-20">
-                        <input type="checkbox" 
-                               class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                               ${isCompleted ? 'checked' : ''}
-                               onchange="updateTaskCompletion(this, '${taskId}')"
-                               data-task-name="${task.taskName}"
-                               title="Mark task as completed">
-                    </td>`;
-
-                row.innerHTML = rowContent;
-                taskList.appendChild(row);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading tracked data:', error);
-            displayTasksWithoutTracking(tasks, teamMembers, userRole);
+            row.innerHTML = rowContent;
+            taskList.appendChild(row);
         });
+    })
+    .catch(error => {
+        console.error('Error loading tracked data:', error);
+        displayTasksWithoutTracking(tasks, teamMembers, userRole);
+    });
 }
 
 // Helper function to display tasks when tracked data fails to load
 function displayTasksWithoutTracking(tasks, teamMembers, userRole) {
+    const taskList = document.getElementById("task-list");
+    if (!taskList) {
+        console.error("Task list element not found in the DOM.");
+        return;
+    }
+
     const currentUser = localStorage.getItem('userName');
     
     // Filter tasks for current user
