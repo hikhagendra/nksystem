@@ -14,11 +14,22 @@ const upload = multer({ dest: 'uploads/' });
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-// Define the correct path to frontend files (project root)
-const frontendPath = path.join(__dirname, '../'); // Moves one level up
-
-// Serve static files (CSS, JS, images)
-app.use(express.static(frontendPath));
+// Root route
+app.get('/', (req, res) => {
+    res.send(`
+        <h1>Welcome to the NKSystem Backend API!</h1>
+        <p>Available Endpoints:</p>
+        <ul>
+            <li><a href="/team-members">/team-members</a> - Get all team members</li>
+            <li><a href="/tasks">/tasks</a> - Get all tasks</li>
+            <li>POST /login - Login</li>
+            <li>POST /add-member - Add a new team member</li>
+            <li>DELETE /delete-member/:id - Delete a team member</li>
+            <li>POST /update-task - Update a task</li>
+            <li>POST /upload-csv - Upload a CSV file</li>
+        </ul>
+    `);
+});
 
 // Login route
 app.post('/login', (req, res) => {
@@ -40,21 +51,6 @@ app.post('/login', (req, res) => {
     } else {
         res.json({ success: false, message: 'Invalid username or password' });
     }
-});
-
-// Serve index.html
-app.get('/', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
-});
-
-// Serve dashboard.html
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'dashboard.html'));
-});
-
-// Serve members.html
-app.get('/members', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'members.html'));
 });
 
 // API Route: Fetch team members
