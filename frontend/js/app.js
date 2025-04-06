@@ -1,3 +1,5 @@
+const backendUrl = "https://nksystem.onrender.com";
+
 // On page load
 window.onload = function() {
     // Check login status and redirect accordingly
@@ -62,42 +64,38 @@ window.onload = function() {
 };
 
 // Handle login form submission
-document.getElementById("login-form")?.addEventListener("submit", function(event) {
-    event.preventDefault();
+document.getElementById("login-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    // Send login credentials to the server
-    fetch('/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password })
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+        const response = await fetch(`${backendUrl}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
         if (data.success) {
-            // Store login status and user info
-            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("loggedIn", true);
             localStorage.setItem("userRole", data.role);
-            localStorage.setItem("userName", data.pegasusName); // Store pegasusName instead of name
-            
+            localStorage.setItem("userName", data.pegasusName);
+
             // Redirect based on role
-            if (data.role === 'admin') {
+            if (data.role === "admin") {
                 window.location.href = "dashboard-admin.html";
-        } else {
+            } else {
                 window.location.href = "dashboard-user.html";
             }
         } else {
             alert(data.message);
         }
-    })
-    .catch(error => {
-        console.error('Error during login:', error);
-        alert("Error logging in. Please try again later.");
-    });
+    } catch (error) {
+        console.error("Error logging in:", error);
+        alert("An error occurred. Please try again.");
+    }
 });
 
 // Handle Add Member form submission
