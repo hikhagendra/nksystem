@@ -7,8 +7,7 @@ const csv = require('csv-parser');
 const he = require('he'); // Use 'he' library for HTML entity decoding
 
 const app = express();
-const port = 3000;
-const host = '0.0.0.0';  // Listen on all network interfaces
+const port = process.env.PORT || 3000;
 const upload = multer({ dest: 'uploads/' });
 
 // Middleware
@@ -538,9 +537,18 @@ app.post('/clear-completed-tasks', (req, res) => {
     }
 });
 
+// Handle 404 errors
+app.get('*', (req, res) => {
+    res.status(404).send('404 Not Found');
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err.message);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+});
+
 // Start the server
-app.listen(port, host, () => {
+app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-    console.log(`Local access: http://localhost:${port}`);
-    console.log(`Network access: http://${require('os').networkInterfaces()['eth0']?.[0]?.address || 'YOUR_IP'}:${port}`);
 });
