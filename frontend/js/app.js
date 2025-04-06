@@ -10,7 +10,7 @@ window.onload = function() {
 
     // Don't redirect if on login page
     if (currentPath.includes('index.html')) {
-    if (loggedIn) {
+        if (loggedIn) {
             // If already logged in, redirect to appropriate dashboard
             window.location.href = userRole === 'admin' ? "dashboard-admin.html" : "dashboard-user.html";
         }
@@ -114,11 +114,11 @@ document.getElementById("add-member-form")?.addEventListener("submit", async fun
     }
 
     try {
-        const response = await fetch('/add-member', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        const response = await fetch(`${backendUrl}/add-member`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ 
                 pegasusName, 
                 username, 
@@ -139,22 +139,22 @@ document.getElementById("add-member-form")?.addEventListener("submit", async fun
     } catch (error) {
         console.error('Error adding member:', error);
         alert('Error adding member. Please try again.');
-}
-    });
+    }
+});
 
 // Load all team members from the backend and display them
 function loadTeamMembers() {
-    fetch('/team-members')
+    fetch(`${backendUrl}/team-members`)
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-        const teamList = document.getElementById("team-members-list");
+            const teamList = document.getElementById("team-members-list");
             teamList.innerHTML = '';
 
             data.teamMembers.forEach((member) => {
-            const row = document.createElement("tr");
+                const row = document.createElement("tr");
                 row.classList.add("hover:bg-gray-50");
-            row.innerHTML = `
+                row.innerHTML = `
                     <td class="p-2 border-t">${member.pegasusName}</td>
                     <td class="p-2 border-t">${member.username}</td>
                     <td class="p-2 border-t">
@@ -173,10 +173,10 @@ function loadTeamMembers() {
                                 Delete
                             </button>
                         ` : ''}
-                </td>
-            `;
-            teamList.appendChild(row);
-        });
+                    </td>
+                `;
+                teamList.appendChild(row);
+            });
         } else {
             alert(data.message || "Error loading team members");
         }
@@ -193,7 +193,7 @@ function deleteMember(id) {
         return;
     }
 
-    fetch(`/delete-member/${id}`, {
+    fetch(`${backendUrl}/delete-member/${id}`, {
         method: 'DELETE'
     })
     .then(response => response.json())
@@ -255,9 +255,9 @@ async function submitJsonData() {
             return;
         }
 
-        const response = await fetch('/update-tasks', {
-        method: 'POST',
-        headers: {
+        const response = await fetch(`${backendUrl}/update-tasks`, {
+            method: 'POST',
+            headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(tasks)
@@ -272,13 +272,13 @@ async function submitJsonData() {
         if (data.success) {
             closeJsonModal();
             // Get the updated tasks immediately
-            const tasksResponse = await fetch('/tasks');
+            const tasksResponse = await fetch(`${backendUrl}/tasks`);
             const tasksData = await tasksResponse.json();
             
             if (tasksData.success) {
                 displayTasks(tasksData.tasks);
                 alert('Tasks updated successfully. Existing estimations and notes have been preserved.');
-        } else {
+            } else {
                 throw new Error(tasksData.message || 'Error loading updated tasks');
             }
         } else {
@@ -302,7 +302,7 @@ async function getTeamMembersOptions(selectedUser) {
     let optionsHtml = '<option value="">Unassigned</option>';
     
     try {
-        const response = await fetch('/team-members');
+        const response = await fetch(`${backendUrl}/team-members`);
         const data = await response.json();
         
         if (data.success && data.teamMembers) {
@@ -370,13 +370,13 @@ function displayTasks(tasks) {
 
     // First, get team members for the dropdown (only for admin)
     if (userRole === 'admin') {
-        fetch('/team-members')
+        fetch(`${backendUrl}/team-members`)
             .then(response => response.json())
             .then(teamData => {
                 const teamMembers = teamData.success ? teamData.teamMembers : [];
                 displayTaskRows(tasks, teamMembers, userRole);
-    })
-    .catch(error => {
+            })
+            .catch(error => {
                 console.error('Error loading team members:', error);
                 displayTaskRows(tasks, [], userRole);
             });
@@ -436,7 +436,7 @@ function displayTaskRows(tasks, teamMembers, userRole) {
     }
 
     // Fetch tracked data
-    fetch('/backend/db/trackedData.json')
+    fetch(`${backendUrl}/backend/db/trackedData.json`)
     .then(response => response.json())
         .then(trackedData => {
             // Calculate today's total tracked hours for the summary card
@@ -455,7 +455,7 @@ function displayTaskRows(tasks, teamMembers, userRole) {
 
             // Create task rows with tracked data
             tasks.forEach((task, index) => {
-            const row = document.createElement("tr");
+                const row = document.createElement("tr");
                 row.classList.add("hover:bg-gray-50");
                 const taskId = String(task.id || task._id);
                 row.dataset.taskId = taskId;
@@ -490,7 +490,7 @@ function displayTaskRows(tasks, teamMembers, userRole) {
                                     </option>`
                                 ).join('')}
                             </select>
-                </td>
+                        </td>
                         <td class="p-2 border w-24 estimation-cell" 
                             ondblclick="this.setAttribute('data-editing', 'true'); makeEditable(this, 'estimation')"
                             data-estimation="${estimatedHours}">
@@ -595,9 +595,9 @@ function displayTaskRows(tasks, teamMembers, userRole) {
 
                 row.innerHTML = rowContent;
                 taskList.appendChild(row);
-        });
-    })
-    .catch(error => {
+            });
+        })
+        .catch(error => {
             console.error('Error loading tracked data:', error);
             displayTasksWithoutTracking(tasks, teamMembers, userRole);
         });
@@ -634,7 +634,7 @@ function displayTasksWithoutTracking(tasks, teamMembers, userRole) {
 
     // Create task rows without tracked data
     tasks.forEach((task, index) => {
-            const row = document.createElement("tr");
+        const row = document.createElement("tr");
         row.classList.add("hover:bg-gray-50");
         const taskId = String(task.id || task._id);
         row.dataset.taskId = taskId;
@@ -890,7 +890,7 @@ async function saveEstimation(input, field) {
     const taskId = row.dataset.taskId;
 
     try {
-        const response = await fetch('/update-task', {
+        const response = await fetch(`${backendUrl}/update-task`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1036,7 +1036,7 @@ async function saveNotes(textarea, field) {
     const taskId = row.dataset.taskId;
 
     try {
-        const response = await fetch('/update-task', {
+        const response = await fetch(`${backendUrl}/update-task`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1101,7 +1101,7 @@ async function updateTaskField(element, field) {
             if (newValue === '') newValue = null;
         }
 
-        const updateResponse = await fetch('/update-task', {
+        const updateResponse = await fetch(`${backendUrl}/update-task`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1143,7 +1143,7 @@ async function updateTaskField(element, field) {
 // Function to load and display tasks
 async function loadAndDisplayTasks() {
     try {
-        const response = await fetch('/tasks');
+        const response = await fetch(`${backendUrl}/tasks`);
         const data = await response.json();
         
         if (data.success) {
@@ -1208,8 +1208,8 @@ async function loadTeamStatus() {
     try {
         // Fetch both tasks and team members
         const [tasksResponse, teamResponse] = await Promise.all([
-            fetch('/tasks'),
-            fetch('/team-members')
+            fetch(`${backendUrl}/tasks`),
+            fetch(`${backendUrl}/team-members`)
         ]);
 
         const tasksData = await tasksResponse.json();
@@ -1337,7 +1337,7 @@ function calculateTeamStats(tasks, teamMembers) {
 // Function to calculate today's tracked hours for the current user
 async function updateTodayTrackedHours() {
     try {
-        const response = await fetch('/backend/db/trackedData.json');
+        const response = await fetch(`${backendUrl}/backend/db/trackedData.json`);
         const trackedData = await response.json();
         
         // Get today's date in the format "YYYY-MM-DD"
@@ -1399,7 +1399,7 @@ async function uploadCSV() {
         uploadButton.textContent = 'Uploading...';
         uploadButton.disabled = true;
 
-        const response = await fetch('/upload-csv', {
+        const response = await fetch(`${backendUrl}/upload-csv`, {
             method: 'POST',
             body: formData
         });
@@ -1438,7 +1438,7 @@ async function updateTaskCompletion(checkbox, taskId) {
             isCompleted: isCompleted
         });
 
-        const response = await fetch('/update-task', {
+        const response = await fetch(`${backendUrl}/update-task`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1479,7 +1479,7 @@ async function clearCompletedTasks() {
     }
 
     try {
-        const response = await fetch('/clear-completed-tasks', {
+        const response = await fetch(`${backendUrl}/clear-completed-tasks`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
