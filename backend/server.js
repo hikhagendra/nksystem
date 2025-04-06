@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors'); // Import cors
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
@@ -10,9 +11,12 @@ const app = express();
 const port = process.env.PORT || 3000;
 const upload = multer({ dest: 'uploads/' });
 
+// Enable CORS for all origins
+app.use(cors());
+
 // Middleware
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // Root route
 app.get('/', (req, res) => {
