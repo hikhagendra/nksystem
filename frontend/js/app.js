@@ -925,8 +925,10 @@ async function saveEstimation(input, field) {
             // Remove editing flag
             cell.removeAttribute('data-editing');
 
-            // Update just the cell content instead of reloading the whole table
-            const trackedHours = parseFloat(cell.querySelector('.flex:nth-child(3) span:last-child').textContent) || 0;
+            // Safely get the tracked hours element
+            const trackedHoursElement = cell.querySelector('.flex:nth-child(3) span:last-child');
+            const trackedHours = trackedHoursElement ? parseFloat(trackedHoursElement.textContent) || 0 : 0;
+
             const progressPercentage = Math.min((trackedHours / newValue) * 100, 100) || 0;
             const progressBarColor = trackedHours > newValue ? 'bg-red-500' : 'bg-green-500';
 
